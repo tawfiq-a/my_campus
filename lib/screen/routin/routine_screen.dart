@@ -1,65 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../../controller/routine/routine_controller.dart';
 import 'add_routine_screen.dart';
 
-class RoutineScreen extends StatefulWidget {
-  @override
-  _RoutineScreenState createState() => _RoutineScreenState();
-}
+class RoutineView extends StatelessWidget {
+  final RoutineController controller = Get.put(RoutineController());
 
-class _RoutineScreenState extends State<RoutineScreen> {
-  final _auth = FirebaseAuth.instance;
-  final _firestore = FirebaseFirestore.instance;
-  bool isTeacher = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkUserRole();
-  }
-
-  void _checkUserRole() async {
-    User? user = _auth.currentUser;
-    if (user != null) {
-      var doc = await _firestore.collection('users').doc(user.uid).get();
-      if (doc.exists) {
-        if (mounted) {
-          setState(() {
-            isTeacher = (doc.data() as Map)['role'] == 'teacher';
-          });
-        }
-      }
-    }
-  }
-
-
-  void _deleteRoutine(String docId) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text("Delete Class?"),
-        content: Text("Are you sure you want to remove this class?"),
-        actions: [
-          TextButton(
-            child: Text("Cancel"),
-            onPressed: () => Navigator.of(ctx).pop(),
-          ),
-          TextButton(
-            child: Text("Delete", style: TextStyle(color: Colors.red)),
-            onPressed: () {
-              _firestore.collection('routines').doc(docId).delete();
-              Navigator.of(ctx).pop();
-            },
-          ),
-        ],
-      ),
-    );
-  }
+ RoutineView({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     return DefaultTabController(
       length: 6,
       child: Scaffold(
@@ -68,7 +19,7 @@ class _RoutineScreenState extends State<RoutineScreen> {
           backgroundColor: Colors.deepPurple,
           iconTheme: IconThemeData(color: Colors.white),
           bottom: TabBar(
-            isScrollable: true, // স্ক্রল করা যাবে
+            isScrollable: true,
             indicatorColor: Colors.white,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white70,
@@ -82,14 +33,15 @@ class _RoutineScreenState extends State<RoutineScreen> {
             ],
           ),
           actions: [
-            if (isTeacher)
-              IconButton(
-                icon: Icon(Icons.add_circle),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => AddRoutineScreen()),
-                ),
-              ),
+            // Add Button (Only Teacher)
+            Obx(
+              () => controller.isTeacher.value
+                  ? IconButton(
+                      icon: Icon(Icons.add_circle),
+                      onPressed: () => Get.to(() => AddRoutineView()),
+                    )
+                  : SizedBox(),
+            ),
           ],
         ),
         body: TabBarView(
@@ -106,14 +58,12 @@ class _RoutineScreenState extends State<RoutineScreen> {
     );
   }
 
-
+  // --- Widget for Routine List ---
   Widget _buildRoutineList(String day) {
     return StreamBuilder<QuerySnapshot>(
-
-      stream: _firestore
+      stream: FirebaseFirestore.instance
           .collection('routines')
           .where('day', isEqualTo: day)
-
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -208,12 +158,15 @@ class _RoutineScreenState extends State<RoutineScreen> {
                       ),
                     ],
                   ),
-                  trailing: isTeacher
-                      ? IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _deleteRoutine(doc.id),
-                        )
-                      : null,
+                  // Delete Button (Only Teacher)
+                  trailing: Obx(
+                    () => controller.isTeacher.value
+                        ? IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => controller.deleteRoutine(doc.id),
+                          )
+                        : SizedBox(),
+                  ),
                 ),
               ),
             );

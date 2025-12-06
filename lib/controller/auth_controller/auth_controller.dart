@@ -94,7 +94,7 @@ class AuthController extends GetxController {
         password: password,
       );
 
-      Get.offAll(() => MainScreen());
+      Get.offAll(() => MainView());
     } catch (e) {
       Get.snackbar(
         "Login Failed",

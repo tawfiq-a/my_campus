@@ -29,7 +29,7 @@ class RoutineHomeScreen extends StatelessWidget {
               "Weekly class schedule & teachers info",
               Icons.calendar_view_week,
               Colors.blueAccent,
-              RoutineScreen(),
+              RoutineView(),
             ),
 
             SizedBox(height: 20),
@@ -41,7 +41,7 @@ class RoutineHomeScreen extends StatelessWidget {
               "Midterm & Final exam dates and seat plans",
               Icons.assignment_late,
               Colors.orangeAccent,
-              ExamRoutineScreen(),
+              ExamRoutineView(),
             ),
           ],
         ),

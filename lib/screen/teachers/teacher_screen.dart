@@ -1,186 +1,58 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-class TeacherScreen extends StatefulWidget {
-  @override
-  _TeacherScreenState createState() => _TeacherScreenState();
-}
-
-class _TeacherScreenState extends State<TeacherScreen> {
-  final _firestore = FirebaseFirestore.instance;
+import '../../controller/teacher/teachers_controller.dart';
 
 
-  bool isTeacher = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkUserRole();
-  }
+class TeacherView extends StatelessWidget {
+  final TeacherController controller = Get.put(TeacherController());
 
 
-  void _checkUserRole() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      var doc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-      if (doc.exists && doc.data() != null) {
-        if (mounted) {
-          setState(() {
-            isTeacher = (doc.data() as Map)['role'] == 'teacher';
-          });
-        }
-      }
-    }
-  }
-
-  // --- Phone Call Function ---
-  Future<void> _makePhoneCall(String phoneNumber) async {
-    final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber.trim());
-    try {
-      await launchUrl(launchUri, mode: LaunchMode.externalApplication);
-    } catch (e) {
-      print("Error launching phone: $e");
-      if (await canLaunchUrl(launchUri)) {
-        await launchUrl(launchUri);
-      }
-    }
-  }
-
-  // --- Email Function ---
-  Future<void> _sendEmail(String email) async {
-    final Uri launchUri = Uri(
-      scheme: 'mailto',
-      path: email.trim(),
-      query: 'subject=Contact from Campus App',
-    );
-    try {
-      await launchUrl(launchUri, mode: LaunchMode.externalApplication);
-    } catch (e) {
-      print("Error launching email: $e");
-      if (await canLaunchUrl(launchUri)) {
-        await launchUrl(launchUri);
-      }
-    }
-  }
-
-  // --- Delete Function ---
-  void _deleteTeacher(String docId) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text("Delete Teacher?"),
-        content: Text(
-          "Are you sure you want to remove this teacher from the list?",
-        ),
-        actions: [
-          TextButton(
-            child: Text("Cancel"),
-            onPressed: () => Navigator.of(ctx).pop(),
-          ),
-          TextButton(
-            child: Text("Delete", style: TextStyle(color: Colors.red)),
-            onPressed: () {
-              _firestore.collection('teachers').doc(docId).delete();
-              Navigator.of(ctx).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Teacher Deleted Successfully")),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  // --- Add / Edit Dialog Function ---
-  void _showTeacherDialog({DocumentSnapshot? document}) {
-    final isEdit = document != null;
-    final data = isEdit ? document.data() as Map<String, dynamic> : null;
-
-    final _nameCtrl = TextEditingController(text: isEdit ? data!['name'] : '');
-    final _desigCtrl = TextEditingController(
-      text: isEdit ? data!['designation'] : '',
-    );
-    final _deptCtrl = TextEditingController(text: isEdit ? data!['dept'] : '');
-    final _phoneCtrl = TextEditingController(
-      text: isEdit ? data!['phone'] : '',
-    );
-    final _emailCtrl = TextEditingController(
-      text: isEdit ? data!['email'] : '',
-    );
+  void _showTeacherDialog(BuildContext context, {DocumentSnapshot? doc}) {
+    controller.initForm(doc);
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          isEdit ? "Edit Teacher Info" : "Add New Teacher",
+          doc != null ? "Edit Teacher Info" : "Add New Teacher",
           style: TextStyle(color: Colors.deepPurple),
         ),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildTextField(_nameCtrl, "Full Name", Icons.person),
+              _buildTextField(controller.nameCtrl, "Full Name", Icons.person),
               SizedBox(height: 10),
-              _buildTextField(_desigCtrl, "Designation", Icons.work),
+              _buildTextField(controller.desigCtrl, "Designation", Icons.work),
               SizedBox(height: 10),
-              _buildTextField(_deptCtrl, "Department", Icons.school),
+              _buildTextField(controller.deptCtrl, "Department", Icons.school),
               SizedBox(height: 10),
               _buildTextField(
-                _phoneCtrl,
+                controller.phoneCtrl,
                 "Phone Number",
                 Icons.phone,
                 isNumber: true,
               ),
               SizedBox(height: 10),
-              _buildTextField(_emailCtrl, "Email Address", Icons.email),
+              _buildTextField(
+                controller.emailCtrl,
+                "Email Address",
+                Icons.email,
+              ),
             ],
           ),
         ),
         actions: [
-          TextButton(
-            child: Text("Cancel"),
-            onPressed: () => Navigator.of(ctx).pop(),
-          ),
+          TextButton(child: Text("Cancel"), onPressed: () => Get.back()),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
             child: Text(
-              isEdit ? "Update" : "Add",
+              doc != null ? "Update" : "Add",
               style: TextStyle(color: Colors.white),
             ),
-            onPressed: () {
-              if (_nameCtrl.text.isEmpty) return;
-
-              final teacherData = {
-                'name': _nameCtrl.text,
-                'designation': _desigCtrl.text,
-                'dept': _deptCtrl.text,
-                'phone': _phoneCtrl.text,
-                'email': _emailCtrl.text,
-              };
-
-              if (isEdit) {
-                _firestore
-                    .collection('teachers')
-                    .doc(document.id)
-                    .update(teacherData);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Updated Successfully!")),
-                );
-              } else {
-                _firestore.collection('teachers').add(teacherData);
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text("Teacher Added!")));
-              }
-              Navigator.of(ctx).pop();
-            },
+            onPressed: () => controller.saveTeacher(doc?.id),
           ),
         ],
       ),
@@ -214,23 +86,32 @@ class _TeacherScreenState extends State<TeacherScreen> {
         elevation: 0,
       ),
 
-
-      floatingActionButton: isTeacher
-          ? FloatingActionButton.extended(
-              backgroundColor: Colors.deepPurple,
-              icon: Icon(Icons.add, color: Colors.white),
-              label: Text("Add Teacher", style: TextStyle(color: Colors.white)),
-              onPressed: () => _showTeacherDialog(),
-            )
-          : null,
+      // Floating Action Button (Only for Teacher)
+      floatingActionButton: Obx(
+        () => controller.isTeacher.value
+            ? FloatingActionButton.extended(
+                backgroundColor: Colors.deepPurple,
+                icon: Icon(Icons.add, color: Colors.white),
+                label: Text(
+                  "Add Teacher",
+                  style: TextStyle(color: Colors.white),
+                ),
+                onPressed: () => _showTeacherDialog(context),
+              )
+            : Container(),
+      ), // Empty Container for Student
 
       body: Container(
         color: Colors.grey[100],
         child: StreamBuilder<QuerySnapshot>(
-          stream: _firestore.collection('teachers').orderBy('name').snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection('teachers')
+              .orderBy('name')
+              .snapshots(),
           builder: (context, snapshot) {
-            if (!snapshot.hasData)
+            if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
+            }
 
             final teachers = snapshot.data!.docs;
 
@@ -262,12 +143,6 @@ class _TeacherScreenState extends State<TeacherScreen> {
                 final doc = teachers[index];
                 final data = doc.data() as Map<String, dynamic>;
 
-                final name = data['name'] ?? 'Unknown';
-                final designation = data['designation'] ?? 'Teacher';
-                final phone = data['phone'] ?? '';
-                final email = data['email'] ?? '';
-                final dept = data['dept'] ?? 'General';
-
                 return Card(
                   elevation: 2,
                   margin: EdgeInsets.symmetric(vertical: 6),
@@ -278,12 +153,11 @@ class _TeacherScreenState extends State<TeacherScreen> {
                     padding: const EdgeInsets.all(12.0),
                     child: Row(
                       children: [
-                        // Avatar Section
                         CircleAvatar(
                           radius: 28,
                           backgroundColor: Colors.deepPurple.shade50,
                           child: Text(
-                            name.isNotEmpty ? name[0].toUpperCase() : '?',
+                            (data['name'] ?? '?')[0].toUpperCase(),
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -292,14 +166,12 @@ class _TeacherScreenState extends State<TeacherScreen> {
                           ),
                         ),
                         SizedBox(width: 15),
-
-                        // Info Section
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                name,
+                                data['name'],
                                 style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
@@ -308,7 +180,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                               ),
                               SizedBox(height: 4),
                               Text(
-                                "$designation",
+                                data['designation'] ?? '',
                                 style: TextStyle(
                                   color: Colors.deepPurple,
                                   fontSize: 13,
@@ -316,7 +188,7 @@ class _TeacherScreenState extends State<TeacherScreen> {
                                 ),
                               ),
                               Text(
-                                "Dept: $dept",
+                                "Dept: ${data['dept'] ?? ''}",
                                 style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 12,
@@ -325,72 +197,81 @@ class _TeacherScreenState extends State<TeacherScreen> {
                             ],
                           ),
                         ),
-
-                        // Actions Section
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            if (phone.isNotEmpty)
+                            if (data['phone'] != null &&
+                                data['phone'].toString().isNotEmpty)
                               IconButton(
-                                constraints: BoxConstraints(),
                                 icon: Icon(
                                   Icons.phone,
                                   color: Colors.green,
                                   size: 24,
                                 ),
-                                onPressed: () => _makePhoneCall(phone),
+                                onPressed: () =>
+                                    controller.makePhoneCall(data['phone']),
                               ),
-                            if (email.isNotEmpty)
+                            if (data['email'] != null &&
+                                data['email'].toString().isNotEmpty)
                               IconButton(
-                                constraints: BoxConstraints(),
                                 icon: Icon(
                                   Icons.email,
                                   color: Colors.blueAccent,
                                   size: 24,
                                 ),
-                                onPressed: () => _sendEmail(email),
+                                onPressed: () =>
+                                    controller.sendEmail(data['email']),
                               ),
 
-
-                            if (isTeacher)
-                              PopupMenuButton<String>(
-                                icon: Icon(Icons.more_vert, color: Colors.grey),
-                                onSelected: (value) {
-                                  if (value == 'edit')
-                                    _showTeacherDialog(document: doc);
-                                  if (value == 'delete') _deleteTeacher(doc.id);
-                                },
-                                itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                    value: 'edit',
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.edit,
-                                          size: 20,
-                                          color: Colors.blue,
+                            // Edit/Delete Menu (Only Teacher)
+                            Obx(
+                              () => controller.isTeacher.value
+                                  ? PopupMenuButton<String>(
+                                      icon: Icon(
+                                        Icons.more_vert,
+                                        color: Colors.grey,
+                                      ),
+                                      onSelected: (value) {
+                                        if (value == 'edit') {
+                                          _showTeacherDialog(context, doc: doc);
+                                        }
+                                        if (value == 'delete') {
+                                          controller.deleteTeacher(doc.id);
+                                        }
+                                      },
+                                      itemBuilder: (context) => [
+                                        PopupMenuItem(
+                                          value: 'edit',
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.edit,
+                                                size: 20,
+                                                color: Colors.blue,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text("Edit"),
+                                            ],
+                                          ),
                                         ),
-                                        SizedBox(width: 8),
-                                        Text("Edit"),
-                                      ],
-                                    ),
-                                  ),
-                                  PopupMenuItem(
-                                    value: 'delete',
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.delete,
-                                          size: 20,
-                                          color: Colors.red,
+                                        PopupMenuItem(
+                                          value: 'delete',
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.delete,
+                                                size: 20,
+                                                color: Colors.red,
+                                              ),
+                                              SizedBox(width: 8),
+                                              Text("Delete"),
+                                            ],
+                                          ),
                                         ),
-                                        SizedBox(width: 8),
-                                        Text("Delete"),
                                       ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                    )
+                                  : SizedBox(),
+                            ),
                           ],
                         ),
                       ],

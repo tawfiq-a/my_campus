@@ -1,77 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-
-class BorrowRequestsScreen extends StatelessWidget {
-  final _firestore = FirebaseFirestore.instance;
+import '../../controller/library_controller/library_controller.dart';
 
 
-  void _deleteRequest(BuildContext context, String reqId) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text("Delete Record?"),
-        content: Text("This will permanently remove this borrow record."),
-        actions: [
-          TextButton(
-            child: Text("Cancel"),
-            onPressed: () => Navigator.pop(ctx),
-          ),
-          TextButton(
-            child: Text("Delete", style: TextStyle(color: Colors.red)),
-            onPressed: () {
-              _firestore.collection('borrow_requests').doc(reqId).delete();
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text("Record Deleted!")));
-            },
-          ),
-        ],
-      ),
-    );
-  }
+class BorrowRequestsView extends StatelessWidget {
+  final LibraryController controller = Get.find();
 
-
-  void _approveRequest(String reqId, String bookId) {
-    _firestore.runTransaction((transaction) async {
-      DocumentReference bookRef = _firestore.collection('books').doc(bookId);
-      DocumentSnapshot bookSnapshot = await transaction.get(bookRef);
-
-      if (bookSnapshot.exists) {
-        int newStock = (bookSnapshot['available_copies'] as int) - 1;
-        if (newStock >= 0) {
-          transaction.update(bookRef, {'available_copies': newStock});
-
-          DateTime returnDate = DateTime.now().add(Duration(days: 7));
-          transaction.update(
-            _firestore.collection('borrow_requests').doc(reqId),
-            {
-              'status': 'Approved',
-              'returnDate': Timestamp.fromDate(returnDate),
-            },
-          );
-        }
-      }
-    });
-  }
-
-
-  void _returnBook(String reqId, String bookId) {
-    _firestore.runTransaction((transaction) async {
-      DocumentReference bookRef = _firestore.collection('books').doc(bookId);
-      DocumentSnapshot bookSnapshot = await transaction.get(bookRef);
-
-      if (bookSnapshot.exists) {
-        int newStock = (bookSnapshot['available_copies'] as int) + 1;
-        transaction.update(bookRef, {'available_copies': newStock});
-        transaction.update(
-          _firestore.collection('borrow_requests').doc(reqId),
-          {'status': 'Returned'},
-        );
-      }
-    });
-  }
+   BorrowRequestsView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +18,7 @@ class BorrowRequestsScreen extends StatelessWidget {
         backgroundColor: Colors.brown,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore
+        stream: FirebaseFirestore.instance
             .collection('borrow_requests')
             .orderBy('requestDate', descending: true)
             .snapshots(),
@@ -120,30 +57,20 @@ class BorrowRequestsScreen extends StatelessWidget {
                           "${data['studentName']} (${data['roll']})\nDate: $reqDate",
                         ),
                         isThreeLine: true,
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              status,
-                              style: TextStyle(
-                                color: status == 'Approved'
-                                    ? Colors.green
-                                    : (status == 'Returned'
-                                          ? Colors.grey
-                                          : Colors.orange),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                        trailing: Text(
+                          status,
+                          style: TextStyle(
+                            color: status == 'Approved'
+                                ? Colors.green
+                                : Colors.orange,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       Divider(),
-
-                      // Action Buttons Row
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-
                           TextButton.icon(
                             icon: Icon(
                               Icons.delete,
@@ -155,23 +82,19 @@ class BorrowRequestsScreen extends StatelessWidget {
                               style: TextStyle(color: Colors.red),
                             ),
                             onPressed: () =>
-                                _deleteRequest(context, reqs[index].id),
+                                controller.deleteRequest(reqs[index].id),
                           ),
-
                           SizedBox(width: 10),
-
-
                           if (status == 'Pending')
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,
-                                padding: EdgeInsets.symmetric(horizontal: 15),
                               ),
                               child: Text(
                                 "Approve",
                                 style: TextStyle(color: Colors.white),
                               ),
-                              onPressed: () => _approveRequest(
+                              onPressed: () => controller.approveRequest(
                                 reqs[index].id,
                                 data['bookId'],
                               ),
@@ -180,14 +103,15 @@ class BorrowRequestsScreen extends StatelessWidget {
                             ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blueGrey,
-                                padding: EdgeInsets.symmetric(horizontal: 15),
                               ),
                               child: Text(
                                 "Mark Return",
                                 style: TextStyle(color: Colors.white),
                               ),
-                              onPressed: () =>
-                                  _returnBook(reqs[index].id, data['bookId']),
+                              onPressed: () => controller.returnBook(
+                                reqs[index].id,
+                                data['bookId'],
+                              ),
                             ),
                         ],
                       ),

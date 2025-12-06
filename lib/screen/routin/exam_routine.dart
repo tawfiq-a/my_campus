@@ -1,44 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart';
+import '../../controller/routine/routine_controller.dart';
 
-class ExamRoutineScreen extends StatefulWidget {
-  const ExamRoutineScreen({super.key});
+class ExamRoutineView extends StatelessWidget {
+  final RoutineController controller = Get.put(RoutineController());
 
-  @override
-  _ExamRoutineScreenState createState() => _ExamRoutineScreenState();
-}
-
-class _ExamRoutineScreenState extends State<ExamRoutineScreen> {
-  final _firestore = FirebaseFirestore.instance;
-  bool isTeacher = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _checkUserRole();
-  }
-
-  void _checkUserRole() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      var doc = await _firestore.collection('users').doc(user.uid).get();
-      if (doc.exists) {
-        if (mounted) {
-          setState(() {
-            isTeacher = (doc.data() as Map)['role'] == 'teacher';
-          });
-        }
-      }
-    }
-  }
-
-  void _showAddExamDialog() {
-    final titleCtrl = TextEditingController();
-    final dateCtrl = TextEditingController();
-    final timeCtrl = TextEditingController();
-
+  // --- Show Add Dialog ---
+  void _showAddExamDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -47,39 +16,26 @@ class _ExamRoutineScreenState extends State<ExamRoutineScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              controller: titleCtrl,
-              decoration: InputDecoration(labelText: "Exam Name (CSE Midterm)"),
+              controller: controller.examTitleCtrl,
+              decoration: InputDecoration(labelText: "Exam Name"),
             ),
             SizedBox(height: 10),
             TextField(
-              controller: dateCtrl,
-              decoration: InputDecoration(labelText: "Date ( 12 Oct 2024)"),
+              controller: controller.examDateCtrl,
+              decoration: InputDecoration(labelText: "Date (e.g. 12 Oct)"),
             ),
             SizedBox(height: 10),
             TextField(
-              controller: timeCtrl,
-              decoration: InputDecoration(labelText: "Time ( 10:00 AM)"),
+              controller: controller.examTimeCtrl,
+              decoration: InputDecoration(labelText: "Time (e.g. 10:00 AM)"),
             ),
           ],
         ),
         actions: [
-          TextButton(
-            child: Text("Cancel"),
-            onPressed: () => Navigator.pop(ctx),
-          ),
+          TextButton(child: Text("Cancel"), onPressed: () => Get.back()),
           ElevatedButton(
             child: Text("Add"),
-            onPressed: () {
-              if (titleCtrl.text.isNotEmpty) {
-                _firestore.collection('exams').add({
-                  'title': titleCtrl.text,
-                  'date': dateCtrl.text,
-                  'time': timeCtrl.text,
-                  'created_at': FieldValue.serverTimestamp(),
-                });
-                Navigator.pop(ctx);
-              }
-            },
+            onPressed: () => controller.addExam(),
           ),
         ],
       ),
@@ -93,15 +49,18 @@ class _ExamRoutineScreenState extends State<ExamRoutineScreen> {
         title: Text("Exam Routine", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.orangeAccent,
         actions: [
-          if (isTeacher)
-            IconButton(
-              icon: Icon(Icons.add, color: Colors.white),
-              onPressed: _showAddExamDialog,
-            ),
+          Obx(
+            () => controller.isTeacher.value
+                ? IconButton(
+                    icon: Icon(Icons.add, color: Colors.white),
+                    onPressed: () => _showAddExamDialog(context),
+                  )
+                : SizedBox(),
+          ),
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore
+        stream: FirebaseFirestore.instance
             .collection('exams')
             .orderBy('created_at', descending: true)
             .snapshots(),
@@ -135,7 +94,6 @@ class _ExamRoutineScreenState extends State<ExamRoutineScreen> {
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
                         ),
                       ),
                       SizedBox(height: 15),
@@ -166,17 +124,19 @@ class _ExamRoutineScreenState extends State<ExamRoutineScreen> {
                           ),
                         ],
                       ),
-                      if (isTeacher)
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
-                            onPressed: () => _firestore
-                                .collection('exams')
-                                .doc(exams[index].id)
-                                .delete(),
-                          ),
-                        ),
+                      // Delete Button (Teacher)
+                      Obx(
+                        () => controller.isTeacher.value
+                            ? Align(
+                                alignment: Alignment.centerRight,
+                                child: IconButton(
+                                  icon: Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () =>
+                                      controller.deleteExam(exams[index].id),
+                                ),
+                              )
+                            : SizedBox(),
+                      ),
                     ],
                   ),
                 ),

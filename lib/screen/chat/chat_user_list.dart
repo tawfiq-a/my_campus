@@ -16,7 +16,7 @@ class ChatUserListView extends StatelessWidget {
         backgroundColor: Colors.deepPurple,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Get.off(() => MainScreen()), // GetX Navigation
+          onPressed: () => Get.off(() => MainView()),
         ),
         automaticallyImplyLeading: false,
       ),
@@ -27,7 +27,7 @@ class ChatUserListView extends StatelessWidget {
             padding: EdgeInsets.all(10),
             color: Colors.deepPurple,
             child: TextField(
-              controller: controller.searchController, // কন্ট্রোলার ব্যবহার
+              controller: controller.searchController,
               style: TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: "Search by Name or Roll...",

@@ -1,36 +1,31 @@
-
-import 'package:chat_app/screen/profile/profile_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import '../../controller/main_screen_controller/main_screen_controller.dart';
+
 import '../chat/chat_user_list.dart';
 import '../homeScreen/home_screen.dart';
 import '../notice/notice_screen.dart';
+import '../profile/profile_screen.dart';
+
+class MainView extends StatelessWidget {
+
+  final MainController controller = Get.put(MainController());
 
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
-
-  @override
-  _MainScreenState createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-
-  static final List<Widget> _pages = <Widget>[
-    HomeDashboard(),
-    NoticeScreen(),
-    ChatUserListView(),
-    ProfileScreen(),
-
+  final List<Widget> _pages = [
+    HomeDashboard(),      // 0
+    NoticeListView(),     // 1
+    ChatUserListView(),   // 2
+    ProfileView(),        // 3
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
 
-      body: _pages[_selectedIndex],
 
+      body: Obx(() => _pages[controller.selectedIndex.value]),
 
       bottomNavigationBar: Container(
         color: Colors.white,
@@ -38,7 +33,7 @@ class _MainScreenState extends State<MainScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
           child: GNav(
             backgroundColor: Colors.white,
-             color: Colors.black,
+            color: Colors.black,
             activeColor: Colors.white,
             tabBackgroundColor: Colors.deepPurple,
             gap: 8,
@@ -47,13 +42,12 @@ class _MainScreenState extends State<MainScreen> {
               GButton(icon: Icons.home, text: 'Home'),
               GButton(icon: Icons.notifications, text: 'Notice'),
               GButton(icon: Icons.chat_bubble, text: 'Chat'),
-              GButton(icon: Icons.person_3, text: 'profile'),
+              GButton(icon: Icons.person, text: 'Profile'),
             ],
-            selectedIndex: _selectedIndex,
+
+            selectedIndex: controller.selectedIndex.value,
             onTabChange: (index) {
-              setState(() {
-                _selectedIndex = index;
-              });
+              controller.changeTabIndex(index);
             },
           ),
         ),
