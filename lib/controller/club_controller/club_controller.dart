@@ -1,8 +1,11 @@
 import 'dart:math';
+import 'package:chat_app/screen/club/club_home.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../screen/club/club_list.dart';
 
 class ClubController extends GetxController {
   // --- Instances ---
@@ -10,11 +13,10 @@ class ClubController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // --- Observables ---
-  var isTeacher = false.obs; // Role status
-  var searchText = "".obs; // For club list search
-  var memberSearchText = "".obs; // For member list search
+  var isTeacher = false.obs;
+  var searchText = "".obs;
+  var memberSearchText = "".obs;
 
-  // আমার জয়েন করা ক্লাবের স্ট্যাটাস ম্যাপ (ClubID -> Status)
   var myClubStatus = <String, String>{}.obs;
 
   // --- Text Controllers ---
@@ -34,7 +36,7 @@ class ClubController extends GetxController {
   void onInit() {
     super.onInit();
     checkRole();
-    fetchMyClubs(); // জয়েন স্ট্যাটাস চেক
+    fetchMyClubs();
 
     // Club Search Listener
     searchCtrl.addListener(() {
@@ -62,7 +64,7 @@ class ClubController extends GetxController {
   String get currentUid => _auth.currentUser?.uid ?? "";
 
   // ============================================
-  // 1. AUTH & ROLE CHECK
+  //  AUTH & ROLE CHECK
   // ============================================
   void checkRole() async {
     User? user = _auth.currentUser;
@@ -79,10 +81,9 @@ class ClubController extends GetxController {
   }
 
   // ============================================
-  // 2. CLUB MANAGEMENT (Create, Update, Delete)
+  //  CLUB MANAGEMENT (Create, Update, Delete)
   // ============================================
 
-  // ফর্ম ক্লিয়ার বা ডাটা সেট করার জন্য
   void initForm(DocumentSnapshot? doc) {
     if (doc != null) {
       var data = doc.data() as Map<String, dynamic>;
@@ -137,7 +138,7 @@ class ClubController extends GetxController {
           colorText: Colors.white,
         );
       }
-      Get.back(); // পেজ বন্ধ
+      Get.to(() => ClubHomeScreen());
     } catch (e) {
       Get.snackbar(
         "Error",
@@ -148,35 +149,32 @@ class ClubController extends GetxController {
     }
   }
 
-  void deleteClub(String clubId) {
-    Get.defaultDialog(
-      title: "Delete Club?",
-      middleText: "Warning: This will remove the club and all its members.",
-      textConfirm: "Delete All",
-      textCancel: "Cancel",
-      confirmTextColor: Colors.white,
-      buttonColor: Colors.red,
-      onConfirm: () async {
-        Get.back(); // ডায়লগ বন্ধ
+  // --- Delete Club Function (Only Logic) ---
+  Future<void> deleteClubLogic(String clubId) async {
+    try {
+      await _firestore.collection('clubs').doc(clubId).delete();
 
-        // ১. ক্লাব ডিলিট
-        await _firestore.collection('clubs').doc(clubId).delete();
+      var members = await _firestore
+          .collection('club_members')
+          .where('clubId', isEqualTo: clubId)
+          .get();
+      for (var doc in members.docs) {
+        await doc.reference.delete();
+      }
 
-        // ২. মেম্বারদের ডিলিট (Cascade Delete)
-        var members = await _firestore
-            .collection('club_members')
-            .where('clubId', isEqualTo: clubId)
-            .get();
-        for (var doc in members.docs) {
-          await doc.reference.delete();
-        }
-        Get.snackbar("Deleted", "Club and members removed.");
-      },
-    );
+      Get.snackbar(
+        "Deleted",
+        "Club removed successfully.",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar("Error", "Failed: $e");
+    }
   }
 
   // ============================================
-  // 3. JOIN & LEAVE LOGIC (For Students)
+  //  JOIN & LEAVE LOGIC (For Students)
   // ============================================
 
   void fetchMyClubs() {
@@ -244,7 +242,7 @@ class ClubController extends GetxController {
   }
 
   // ============================================
-  // 4. ADMIN & MEMBER MANAGEMENT (For Teachers)
+  //  ADMIN & MEMBER MANAGEMENT (For Teachers)
   // ============================================
 
   String _generateMemberId(String clubName) {
