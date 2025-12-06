@@ -10,6 +10,8 @@ class NoticeListView extends StatelessWidget {
   // Inject Controller
   final NoticeController controller = Get.put(NoticeController());
 
+  NoticeListView({super.key});
+
   // --- Show Edit Dialog ---
   void _showEditDialog(BuildContext context, String docId) {
     Get.defaultDialog(
@@ -18,16 +20,36 @@ class NoticeListView extends StatelessWidget {
         children: [
           TextField(
             controller: controller.titleCtrl,
-            decoration: InputDecoration(labelText: "Title"),
+            decoration: InputDecoration(
+              labelText: "Title",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.red),
+              ),
+            ),
           ),
+          SizedBox(height: 15),
           TextField(
             controller: controller.descCtrl,
             maxLines: 3,
-            decoration: InputDecoration(labelText: "Description"),
+            decoration: InputDecoration(
+              labelText: "Description",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.red),
+              ),
+            ),
           ),
+          SizedBox(height: 15),
           TextField(
             controller: controller.linkCtrl,
-            decoration: InputDecoration(labelText: "PDF Link"),
+            decoration: InputDecoration(
+              labelText: "PDF Link",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.red),
+              ),
+            ),
           ),
         ],
       ),
@@ -110,8 +132,9 @@ class NoticeListView extends StatelessWidget {
                   .orderBy('date', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData)
+                if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());
+                }
 
                 final allNotices = snapshot.data!.docs;
 
@@ -189,8 +212,9 @@ class NoticeListView extends StatelessWidget {
                                     () => controller.isTeacher.value
                                         ? PopupMenuButton<String>(
                                             onSelected: (value) {
-                                              if (value == 'delete')
+                                              if (value == 'delete') {
                                                 controller.deleteNotice(doc.id);
+                                              }
                                               if (value == 'edit') {
                                                 controller.prepareEdit(data);
                                                 _showEditDialog(

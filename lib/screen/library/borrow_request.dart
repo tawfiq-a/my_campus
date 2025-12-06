@@ -4,11 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import '../../controller/library_controller/library_controller.dart';
 
-
 class BorrowRequestsView extends StatelessWidget {
   final LibraryController controller = Get.find();
 
-   BorrowRequestsView({super.key});
+  BorrowRequestsView({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -7,7 +7,7 @@ class ClubMembersView extends StatelessWidget {
   final String clubId;
   final String clubName;
 
-  ClubMembersView({required this.clubId, required this.clubName});
+  ClubMembersView({super.key, required this.clubId, required this.clubName});
 
   final ClubController controller = Get.find(); // Find existing controller
 
@@ -54,14 +54,14 @@ class ClubMembersView extends StatelessWidget {
                   .where('status', isEqualTo: 'Approved')
                   .snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData)
+                if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());
+                }
 
                 final allMembers = snapshot.data!.docs;
 
-                // 🔥 FIX: Obx ব্যবহার 🔥
+
                 return Obx(() {
-                  // ভেরিয়েবলটি রিড করা হচ্ছে
                   String search = controller.memberSearchText.value;
 
                   final filteredMembers = allMembers.where((doc) {
@@ -112,8 +112,11 @@ class ClubMembersView extends StatelessWidget {
                             ],
                           ),
 
-                          // Remove Button (No need for extra Obx here because parent Obx handles it,
-                          // but to be safe we check controller.isTeacher.value inside the parent logic or access it directly)
+
+
+                          /*------ Remove Button (No need for extra Obx here because parent Obx handles it,
+                           but to be safe we check controller.isTeacher.value inside the parent logic or access it directly)-----------*/
+
                           trailing: controller.isTeacher.value
                               ? IconButton(
                                   icon: Icon(

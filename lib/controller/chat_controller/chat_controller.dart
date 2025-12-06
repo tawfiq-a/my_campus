@@ -9,7 +9,7 @@ class ChatController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // --- Observables ---
-  var searchText = "".obs; // সার্চ টেক্সট রিয়েক্টিভ
+  var searchText = "".obs;
   final searchController = TextEditingController();
   final messageController = TextEditingController();
 
@@ -17,7 +17,6 @@ class ChatController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // সার্চ টেক্সট লিসেনার
     searchController.addListener(() {
       searchText.value = searchController.text.toLowerCase();
     });
@@ -46,18 +45,18 @@ class ChatController extends GetxController {
   void sendMessage(String chatRoomId) async {
     if (messageController.text.isNotEmpty) {
       String msg = messageController.text;
-      messageController.clear(); // UI ক্লিন করে দিচ্ছে সাথে সাথে
+      messageController.clear();
 
       await _firestore
           .collection('chat_rooms')
           .doc(chatRoomId)
           .collection('messages')
           .add({
-        'text': msg,
-        'sender': _auth.currentUser!.email,
-        'time': FieldValue.serverTimestamp(),
-        'isRead': false,
-      });
+            'text': msg,
+            'sender': _auth.currentUser!.email,
+            'time': FieldValue.serverTimestamp(),
+            'isRead': false,
+          });
     }
   }
 
@@ -87,7 +86,13 @@ class ChatController extends GetxController {
         .doc(messageId)
         .delete();
 
-    Get.snackbar("Deleted", "Message deleted successfully",
-        snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.redAccent, colorText: Colors.white, duration: Duration(seconds: 1));
+    Get.snackbar(
+      "Deleted",
+      "Message deleted successfully",
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.redAccent,
+      colorText: Colors.white,
+      duration: Duration(seconds: 1),
+    );
   }
 }

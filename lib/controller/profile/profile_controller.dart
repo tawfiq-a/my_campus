@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../../screen/auth/login_screen.dart';
-
 
 class ProfileController extends GetxController {
   // --- Instances ---
@@ -17,6 +15,8 @@ class ProfileController extends GetxController {
   var isEditing = false.obs; // Tracks edit mode
   var userRole = 'student'.obs;
   var selectedBloodGroup = RxnString(); // Nullable reactive string
+
+  var userEmail = "".obs;
 
   // --- Text Controllers ---
   final nameCtrl = TextEditingController();
@@ -38,6 +38,12 @@ class ProfileController extends GetxController {
   ];
 
   @override
+  void onReady() {
+    super.onReady();
+    fetchUserData();
+  }
+
+  @override
   void onInit() {
     super.onInit();
     fetchUserData();
@@ -57,6 +63,7 @@ class ProfileController extends GetxController {
   void fetchUserData() async {
     User? user = _auth.currentUser;
     if (user != null) {
+      userEmail.value = user.email ?? "";
       try {
         var doc = await _firestore.collection('users').doc(user.uid).get();
         if (doc.exists) {
@@ -130,7 +137,7 @@ class ProfileController extends GetxController {
         colorText: Colors.white,
       );
 
-      isEditing.value = false; // Turn off edit mode
+      isEditing.value = false;
     } catch (e) {
       Get.snackbar(
         "Error",
@@ -142,7 +149,7 @@ class ProfileController extends GetxController {
     isSaving.value = false;
   }
 
-  // --- 4. Logout Logic ---
+  // --- Logout Logic ---
   void logout() {
     Get.defaultDialog(
       title: "Log Out",
@@ -155,6 +162,10 @@ class ProfileController extends GetxController {
       onConfirm: () async {
         Get.back(); // Close Dialog
         await _auth.signOut();
+        // Get.delete<ProfileController>();
+        // Get.delete<ChatController>();
+        // Get.delete<ClubController>();
+        Get.deleteAll();
         Get.offAll(() => LoginView()); // Navigate to Login and clear stack
       },
     );

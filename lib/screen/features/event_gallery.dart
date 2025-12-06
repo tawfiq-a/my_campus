@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../controller/feature_controller/evennt_controller.dart';
 
-
 class EventGalleryView extends StatelessWidget {
-
   final EventGalleryController controller = Get.put(EventGalleryController());
+
+  EventGalleryView({super.key});
 
   // --- Show Add Event Dialog ---
   void _showAddEventDialog(BuildContext context) {
@@ -24,7 +24,9 @@ class EventGalleryView extends StatelessWidget {
               ),
               TextField(
                 controller: controller.dateCtrl,
-                decoration: InputDecoration(labelText: "Date (e.g. 25 Dec 2023)"),
+                decoration: InputDecoration(
+                  labelText: "Date (e.g. 25 Dec 2023)",
+                ),
               ),
               TextField(
                 controller: controller.descCtrl,
@@ -86,7 +88,10 @@ class EventGalleryView extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Events & Gallery", style: TextStyle(color: Colors.white)),
+          title: Text(
+            "Events & Gallery",
+            style: TextStyle(color: Colors.white),
+          ),
           backgroundColor: Colors.pinkAccent,
           iconTheme: IconThemeData(color: Colors.white),
           bottom: TabBar(
@@ -100,10 +105,7 @@ class EventGalleryView extends StatelessWidget {
           ),
         ),
         body: TabBarView(
-          children: [
-            _buildEventsTab(),
-            _buildGalleryTab(context),
-          ],
+          children: [_buildEventsTab(), _buildGalleryTab(context)],
         ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.pinkAccent,
@@ -120,15 +122,18 @@ class EventGalleryView extends StatelessWidget {
                       leading: Icon(Icons.event, color: Colors.pinkAccent),
                       title: Text("Add Event"),
                       onTap: () {
-                        Get.back(); // বটম শিট বন্ধ
+                        Get.back();
                         _showAddEventDialog(context);
                       },
                     ),
                     ListTile(
-                      leading: Icon(Icons.add_a_photo, color: Colors.pinkAccent),
+                      leading: Icon(
+                        Icons.add_a_photo,
+                        color: Colors.pinkAccent,
+                      ),
                       title: Text("Add Photo Link"),
                       onTap: () {
-                        Get.back(); // বটম শিট বন্ধ
+                        Get.back();
                         _showAddPhotoDialog(context);
                       },
                     ),
@@ -145,9 +150,14 @@ class EventGalleryView extends StatelessWidget {
   // --- Events Tab ---
   Widget _buildEventsTab() {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('events').orderBy('timestamp', descending: true).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('events')
+          .orderBy('timestamp', descending: true)
+          .snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
         final events = snapshot.data!.docs;
 
         if (events.isEmpty) return Center(child: Text("No upcoming events"));
@@ -159,7 +169,9 @@ class EventGalleryView extends StatelessWidget {
             final data = events[index].data() as Map<String, dynamic>;
             return Card(
               elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
               margin: EdgeInsets.only(bottom: 15),
               child: Padding(
                 padding: const EdgeInsets.all(15.0),
@@ -170,33 +182,56 @@ class EventGalleryView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.pink.shade50,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
                             data['date'],
-                            style: TextStyle(color: Colors.pink, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.pink,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                        // ডিলিট বাটন (শুধুমাত্র টিচার দেখতে পাবে বা ক্লিক করলে চেক হবে)
                         InkWell(
-                          onTap: () => controller.deleteItem('events', events[index].id),
-                          child: Icon(Icons.delete_outline, color: Colors.grey, size: 20),
+                          onTap: () =>
+                              controller.deleteItem('events', events[index].id),
+                          child: Icon(
+                            Icons.delete_outline,
+                            color: Colors.grey,
+                            size: 20,
+                          ),
                         ),
                       ],
                     ),
                     SizedBox(height: 10),
-                    Text(data['title'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text(
+                      data['title'],
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     SizedBox(height: 5),
-                    Text(data['description'], style: TextStyle(color: Colors.grey[700])),
+                    Text(
+                      data['description'],
+                      style: TextStyle(color: Colors.grey[700]),
+                    ),
                     SizedBox(height: 10),
                     Align(
                       alignment: Alignment.centerRight,
                       child: Text(
                         "Posted by: ${data['postedBy'] ?? 'Unknown'}",
-                        style: TextStyle(fontSize: 12, color: Colors.grey, fontStyle: FontStyle.italic),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                          fontStyle: FontStyle.italic,
+                        ),
                       ),
                     ),
                   ],
@@ -212,9 +247,14 @@ class EventGalleryView extends StatelessWidget {
   // --- Gallery Tab ---
   Widget _buildGalleryTab(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('gallery').orderBy('timestamp', descending: true).snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('gallery')
+          .orderBy('timestamp', descending: true)
+          .snapshots(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
         final photos = snapshot.data!.docs;
 
         if (photos.isEmpty) return Center(child: Text("Gallery is empty"));
@@ -240,15 +280,28 @@ class EventGalleryView extends StatelessWidget {
                       children: [
                         Image.network(
                           data['imageUrl'],
-                          errorBuilder: (context, error, stackTrace) => Icon(Icons.broken_image, size: 100, color: Colors.grey),
+                          errorBuilder: (context, error, stackTrace) => Icon(
+                            Icons.broken_image,
+                            size: 100,
+                            color: Colors.grey,
+                          ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Column(
                             children: [
                               if (data['caption'] != null)
-                                Text(data['caption'], style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text("Uploaded by: ${data['uploadedBy']}", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                Text(
+                                  data['caption'],
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              Text(
+                                "Uploaded by: ${data['uploadedBy']}",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -257,7 +310,8 @@ class EventGalleryView extends StatelessWidget {
                   ),
                 );
               },
-              onLongPress: () => controller.deleteItem('gallery', photos[index].id),
+              onLongPress: () =>
+                  controller.deleteItem('gallery', photos[index].id),
               child: Card(
                 elevation: 3,
                 child: Column(
@@ -267,7 +321,9 @@ class EventGalleryView extends StatelessWidget {
                       child: Image.network(
                         data['imageUrl'],
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Center(child: Icon(Icons.broken_image, color: Colors.grey)),
+                        errorBuilder: (context, error, stackTrace) => Center(
+                          child: Icon(Icons.broken_image, color: Colors.grey),
+                        ),
                       ),
                     ),
                     Padding(

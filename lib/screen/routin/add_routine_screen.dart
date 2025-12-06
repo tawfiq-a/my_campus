@@ -5,6 +5,8 @@ import '../../controller/routine/routine_controller.dart';
 class AddRoutineView extends StatelessWidget {
   final RoutineController controller = Get.find();
 
+   AddRoutineView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

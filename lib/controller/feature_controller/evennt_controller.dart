@@ -74,7 +74,6 @@ class EventGalleryController extends GetxController {
         colorText: Colors.white,
       );
 
-
       titleCtrl.clear();
       descCtrl.clear();
       dateCtrl.clear();
@@ -103,7 +102,6 @@ class EventGalleryController extends GetxController {
         backgroundColor: Colors.green,
         colorText: Colors.white,
       );
-
 
       linkCtrl.clear();
       captionCtrl.clear();

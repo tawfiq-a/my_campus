@@ -7,8 +7,7 @@ class ChatView extends StatelessWidget {
   final String chatRoomId;
   final String receiverName;
 
-  ChatView({required this.chatRoomId, required this.receiverName}) {
-
+  ChatView({super.key, required this.chatRoomId, required this.receiverName}) {
     final ChatController controller = Get.find();
     controller.markMessagesAsRead(chatRoomId);
   }
@@ -25,7 +24,7 @@ class ChatView extends StatelessWidget {
       buttonColor: Colors.red,
       onConfirm: () {
         controller.deleteMessage(chatRoomId, messageId);
-        Get.back(); // ডায়লগ বন্ধ
+        Get.back();
       },
     );
   }
@@ -39,7 +38,10 @@ class ChatView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(receiverName, style: TextStyle(color: Colors.white)),
-            Text("Online", style: TextStyle(fontSize: 12, color: Colors.white70)),
+            Text(
+              "Online",
+              style: TextStyle(fontSize: 12, color: Colors.white70),
+            ),
           ],
         ),
         backgroundColor: Colors.deepPurple,
@@ -60,7 +62,9 @@ class ChatView extends StatelessWidget {
                   .orderBy('time', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator());
+                }
 
                 final messages = snapshot.data!.docs;
 
@@ -98,10 +102,12 @@ class ChatView extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: controller.messageController, // কন্ট্রোলার
+                    controller: controller.messageController,
                     decoration: InputDecoration(
                       hintText: 'Type a message...',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                     ),
                   ),
                 ),
@@ -118,7 +124,7 @@ class ChatView extends StatelessWidget {
   }
 }
 
-// মেসেজ বাবল ডিজাইন (আলাদা উইজেট রাখা ভালো)
+
 class MessageBubble extends StatelessWidget {
   final String text;
   final bool isMe;
@@ -130,7 +136,9 @@ class MessageBubble extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(10.0),
       child: Column(
-        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: isMe
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Material(
             borderRadius: BorderRadius.circular(30),

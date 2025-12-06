@@ -36,7 +36,7 @@ class TeacherController extends GetxController {
     super.onClose();
   }
 
-  // --- 1. Role Check ---
+  // --- Role Check ---
   void checkRole() async {
     User? user = _auth.currentUser;
     if (user != null) {
@@ -52,18 +52,22 @@ class TeacherController extends GetxController {
     isLoading.value = false;
   }
 
-  // --- 2. Phone Call ---
+  // --- Phone Call ---
   Future<void> makePhoneCall(String phoneNumber) async {
     final Uri launchUri = Uri(scheme: 'tel', path: phoneNumber.trim());
     try {
       await launchUrl(launchUri, mode: LaunchMode.externalApplication);
     } catch (e) {
-      Get.snackbar("Error", "Could not launch dialer",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Could not launch dialer",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
-  // --- 3. Email ---
+  // ---  Email ---
   Future<void> sendEmail(String email) async {
     final Uri launchUri = Uri(
       scheme: 'mailto',
@@ -73,12 +77,16 @@ class TeacherController extends GetxController {
     try {
       await launchUrl(launchUri, mode: LaunchMode.externalApplication);
     } catch (e) {
-      Get.snackbar("Error", "Could not launch email app",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Could not launch email app",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
-  // --- 4. Delete Teacher ---
+  // ---  Delete Teacher ---
   void deleteTeacher(String docId) {
     Get.defaultDialog(
       title: "Delete Teacher?",
@@ -90,15 +98,19 @@ class TeacherController extends GetxController {
       onConfirm: () {
         _firestore.collection('teachers').doc(docId).delete();
         Get.back();
-        Get.snackbar("Deleted", "Teacher removed successfully",
-            backgroundColor: Colors.red, colorText: Colors.white);
+        Get.snackbar(
+          "Deleted",
+          "Teacher removed successfully",
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       },
     );
   }
 
-  // --- 5. Add / Edit Teacher Logic ---
+  // --- Add / Edit Teacher Logic ---
 
-  // ফর্ম সেটআপ করা (এডিট বা অ্যাড মোডের জন্য)
+
   void initForm(DocumentSnapshot? doc) {
     if (doc != null) {
       var data = doc.data() as Map<String, dynamic>;
@@ -118,8 +130,12 @@ class TeacherController extends GetxController {
 
   void saveTeacher(String? docId) async {
     if (nameCtrl.text.isEmpty) {
-      Get.snackbar("Error", "Name is required",
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Name is required",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -135,18 +151,30 @@ class TeacherController extends GetxController {
       if (docId != null) {
         // Update
         await _firestore.collection('teachers').doc(docId).update(teacherData);
-        Get.snackbar("Success", "Updated Successfully!",
-            backgroundColor: Colors.green, colorText: Colors.white);
+        Get.snackbar(
+          "Success",
+          "Updated Successfully!",
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
       } else {
         // Add
         await _firestore.collection('teachers').add(teacherData);
-        Get.snackbar("Success", "Teacher Added!",
-            backgroundColor: Colors.green, colorText: Colors.white);
+        Get.snackbar(
+          "Success",
+          "Teacher Added!",
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
       }
-      Get.back(); // ডায়লগ বন্ধ
+      Get.back(); // Close screen
     } catch (e) {
-      Get.snackbar("Error", e.toString(),
-          backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        e.toString(),
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 }

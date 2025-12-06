@@ -20,6 +20,8 @@ class MainView extends StatelessWidget {
     ProfileView(),        // 3
   ];
 
+   MainView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -63,7 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '913080540544',
     projectId: 'mychatapp-9290f',
     storageBucket: 'mychatapp-9290f.firebasestorage.app',
-    iosClientId: '913080540544-0gsstqv7eb2dhvsuqtjfnenf5j99m5kc.apps.googleusercontent.com',
+    iosClientId:
+        '913080540544-0gsstqv7eb2dhvsuqtjfnenf5j99m5kc.apps.googleusercontent.com',
     iosBundleId: 'com.example.chatApp',
   );
 }

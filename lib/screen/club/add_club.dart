@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controller/club_controller/club_controller.dart';
 
-
 class AddClubView extends StatelessWidget {
-  final String? docId; // এডিটের জন্য ID (নাল হলে নতুন)
-  AddClubView({this.docId});
+  final String? docId;
+  AddClubView({super.key, this.docId});
 
   final ClubController controller = Get.find();
 
@@ -33,11 +32,16 @@ class AddClubView extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,
+                  ),
                   onPressed: () => controller.saveClub(docId),
-                  child: Text(docId != null ? "UPDATE CLUB" : "CREATE CLUB", style: TextStyle(color: Colors.white)),
+                  child: Text(
+                    docId != null ? "UPDATE CLUB" : "CREATE CLUB",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -45,7 +49,11 @@ class AddClubView extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(TextEditingController ctrl, String label, {int maxLines = 1}) {
+  Widget _buildTextField(
+    TextEditingController ctrl,
+    String label, {
+    int maxLines = 1,
+  }) {
     return TextField(
       controller: ctrl,
       maxLines: maxLines,

@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../controller/teacher/teachers_controller.dart';
 
-
 class TeacherView extends StatelessWidget {
   final TeacherController controller = Get.put(TeacherController());
 
+  TeacherView({super.key});
 
   void _showTeacherDialog(BuildContext context, {DocumentSnapshot? doc}) {
     controller.initForm(doc);

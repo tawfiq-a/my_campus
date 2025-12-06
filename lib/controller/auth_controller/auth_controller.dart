@@ -3,8 +3,6 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-import '../../screen/homeScreen/home_screen.dart';
 import '../../screen/mainScreen/main_screen.dart';
 
 class AuthController extends GetxController {
@@ -38,7 +36,7 @@ class AuthController extends GetxController {
     'EMT',
     'ENT',
     'RAC',
-    'MACHANICAL',
+    'MECHANICAL',
     'ET',
     'CIVIL',
   ];
@@ -85,7 +83,7 @@ class AuthController extends GetxController {
         if (snapshot.docs.isNotEmpty) {
           emailToLogin = snapshot.docs.first['email'];
         } else {
-          throw "Roll Number not found!";
+          throw "email or Roll Number not found!";
         }
       }
 
@@ -229,7 +227,7 @@ class AuthController extends GetxController {
         });
       }
 
-      Get.offAll(() => HomeDashboard());
+      Get.offAll(() => MainView());
     } catch (e) {
       Get.snackbar(
         "Error",

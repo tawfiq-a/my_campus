@@ -10,9 +10,9 @@ class AccountsController extends GetxController {
 
   // --- Observables ---
   var isTeacher = false.obs;
-  var isLoading = true.obs; // পেজ লোডিং এর জন্য
-  var isSubmitting = false.obs; // রিকোয়েস্ট সাবমিট করার লোডিং
-  var selectedDoc = 'Testimonial'.obs; // ড্রপডাউন ভ্যালু
+  var isLoading = true.obs;
+  var isSubmitting = false.obs;
+  var selectedDoc = 'Testimonial'.obs;
 
   // --- Text Controllers ---
   final reasonCtrl = TextEditingController();
@@ -41,7 +41,7 @@ class AccountsController extends GetxController {
     super.onClose();
   }
 
-  // --- 1. CHECK ROLE ---
+  // ---  CHECK ROLE ---
   void checkRole() async {
     User? user = _auth.currentUser;
     if (user != null) {
@@ -54,10 +54,10 @@ class AccountsController extends GetxController {
         print("Role check error: $e");
       }
     }
-    isLoading.value = false; // পেজ লোড শেষ
+    isLoading.value = false;
   }
 
-  // --- 2. SUBMIT REQUEST (Student) ---
+  // --- SUBMIT REQUEST (Student) ---
   void submitRequest() async {
     if (phoneCtrl.text.isEmpty || deptCtrl.text.isEmpty) {
       Get.snackbar(
@@ -73,7 +73,7 @@ class AccountsController extends GetxController {
     User? user = _auth.currentUser;
     if (user == null) return;
 
-    isSubmitting.value = true; // সাবমিট লোডিং শুরু
+    isSubmitting.value = true;
     try {
       var userDoc = await _firestore.collection('users').doc(user.uid).get();
       String name = userDoc['name'] ?? 'Unknown';
@@ -93,7 +93,7 @@ class AccountsController extends GetxController {
         'timestamp': FieldValue.serverTimestamp(),
       });
 
-      Get.back(); // পেজ বন্ধ
+      Get.back();
       Get.snackbar(
         "Success",
         "Request Submitted Successfully!",
@@ -102,7 +102,7 @@ class AccountsController extends GetxController {
         colorText: Colors.white,
       );
 
-      // ফিল্ড ক্লিয়ার
+
       phoneCtrl.clear();
       deptCtrl.clear();
       reasonCtrl.clear();
@@ -115,7 +115,7 @@ class AccountsController extends GetxController {
         colorText: Colors.white,
       );
     }
-    isSubmitting.value = false; // সাবমিট লোডিং শেষ
+    isSubmitting.value = false;
   }
 
   // --- 3. ADMIN ACTIONS (Teacher) ---
@@ -123,7 +123,7 @@ class AccountsController extends GetxController {
     _firestore.collection('document_requests').doc(docId).update({
       'status': newStatus,
     });
-    Get.back(); // ডায়লগ বন্ধ
+    Get.back();
     Get.snackbar(
       "Updated",
       "Status changed to $newStatus",

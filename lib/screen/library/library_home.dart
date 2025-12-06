@@ -6,11 +6,10 @@ import '../../controller/library_controller/library_controller.dart';
 import 'add_book_screen.dart';
 import 'borrow_request.dart';
 
-
 class LibraryHomeView extends StatelessWidget {
   final LibraryController controller = Get.put(LibraryController());
 
- LibraryHomeView({super.key});
+  LibraryHomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +55,6 @@ class LibraryHomeView extends StatelessWidget {
       ),
     );
   }
-
 
   Widget _buildAllBooksTab() {
     return Column(

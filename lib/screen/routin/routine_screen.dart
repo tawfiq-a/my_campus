@@ -7,7 +7,7 @@ import 'add_routine_screen.dart';
 class RoutineView extends StatelessWidget {
   final RoutineController controller = Get.put(RoutineController());
 
- RoutineView({super.key});
+  RoutineView({super.key});
 
   @override
   Widget build(BuildContext context) {

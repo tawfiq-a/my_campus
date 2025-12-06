@@ -5,8 +5,11 @@ import '../../controller/club_controller/club_controller.dart';
 import 'add_club.dart';
 import 'club_admin.dart';
 import 'club_member_list.dart';
+
 class ClubListView extends StatelessWidget {
   final ClubController controller = Get.put(ClubController());
+
+ ClubListView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,25 +19,31 @@ class ClubListView extends StatelessWidget {
         backgroundColor: Colors.indigo,
         automaticallyImplyLeading: false,
         actions: [
-          // Obx ব্যবহার করা হয়েছে কারণ isTeacher পরিবর্তন হতে পারে
-          Obx(() => controller.isTeacher.value
-              ? IconButton(
-            icon: Icon(Icons.admin_panel_settings, color: Colors.limeAccent),
-            onPressed: () => Get.to(() => ClubAdminView()),
-          )
-              : SizedBox()),
+          Obx(
+            () => controller.isTeacher.value
+                ? IconButton(
+                    icon: Icon(
+                      Icons.admin_panel_settings,
+                      color: Colors.limeAccent,
+                    ),
+                    onPressed: () => Get.to(() => ClubAdminView()),
+                  )
+                : SizedBox(),
+          ),
         ],
       ),
-      floatingActionButton: Obx(() => controller.isTeacher.value
-          ? FloatingActionButton(
-        backgroundColor: Colors.indigo,
-        child: Icon(Icons.add, color: Colors.white),
-        onPressed: () {
-          controller.initForm(null);
-          Get.to(() => AddClubView());
-        },
-      )
-          : Container()),
+      floatingActionButton: Obx(
+        () => controller.isTeacher.value
+            ? FloatingActionButton(
+                backgroundColor: Colors.indigo,
+                child: Icon(Icons.add, color: Colors.white),
+                onPressed: () {
+                  controller.initForm(null);
+                  Get.to(() => AddClubView());
+                },
+              )
+            : Container(),
+      ),
 
       body: Column(
         children: [
@@ -58,29 +67,36 @@ class ClubListView extends StatelessWidget {
                 ),
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.2),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide.none),
-                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 0,
+                ),
               ),
             ),
           ),
 
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('clubs').orderBy('created_at', descending: true).snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('clubs')
+                  .orderBy('created_at', descending: true)
+                  .snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator());
+                }
 
                 final allClubs = snapshot.data!.docs;
 
-                // 🔥 FIX: Obx এর ব্যবহার সংশোধন করা হলো 🔥
                 return Obx(() {
-                  // এখানে ভেরিয়েবলটি কল করতেই হবে, নাহলে এরর দেবে
                   String search = controller.searchText.value;
-
                   final filteredClubs = allClubs.where((doc) {
                     final data = doc.data() as Map<String, dynamic>;
                     final name = (data['name'] ?? '').toLowerCase();
-                    // উপরের 'search' ভেরিয়েবলটি ব্যবহার করছি
                     return name.contains(search);
                   }).toList();
 
@@ -90,7 +106,10 @@ class ClubListView extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.group_off, size: 60, color: Colors.grey),
-                          Text("No clubs found!", style: TextStyle(color: Colors.grey)),
+                          Text(
+                            "No clubs found!",
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         ],
                       ),
                     );
@@ -106,9 +125,16 @@ class ClubListView extends StatelessWidget {
                       return Card(
                         elevation: 3,
                         margin: EdgeInsets.only(bottom: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
                         child: InkWell(
-                          onTap: () => Get.to(() => ClubMembersView(clubId: doc.id, clubName: data['name'])),
+                          onTap: () => Get.to(
+                            () => ClubMembersView(
+                              clubId: doc.id,
+                              clubName: data['name'],
+                            ),
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(15.0),
                             child: Column(
@@ -118,63 +144,117 @@ class ClubListView extends StatelessWidget {
                                   children: [
                                     CircleAvatar(
                                       radius: 30,
-                                      backgroundImage: data['logoUrl'] != null ? NetworkImage(data['logoUrl']) : null,
+                                      backgroundImage: data['logoUrl'] != null
+                                          ? NetworkImage(data['logoUrl'])
+                                          : null,
                                       backgroundColor: Colors.indigo.shade50,
-                                      child: data['logoUrl'] == null ? Icon(Icons.groups, color: Colors.indigo) : null,
+                                      child: data['logoUrl'] == null
+                                          ? Icon(
+                                              Icons.groups,
+                                              color: Colors.indigo,
+                                            )
+                                          : null,
                                     ),
                                     SizedBox(width: 15),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Text(data['name'], style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                                          if (data['slogan'] != null) Text(data['slogan'], style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic)),
+                                          Text(
+                                            data['name'],
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          if (data['slogan'] != null)
+                                            Text(
+                                              data['slogan'],
+                                              style: TextStyle(
+                                                color: Colors.grey[600],
+                                                fontStyle: FontStyle.italic,
+                                              ),
+                                            ),
                                         ],
                                       ),
                                     ),
 
-                                    // টিচার হলে এডিট বাটন দেখাবে
                                     if (controller.isTeacher.value) ...[
                                       IconButton(
-                                        icon: Icon(Icons.edit, color: Colors.blue),
+                                        icon: Icon(
+                                          Icons.edit,
+                                          color: Colors.blue,
+                                        ),
                                         onPressed: () {
                                           controller.initForm(doc);
-                                          Get.to(() => AddClubView(docId: doc.id));
+                                          Get.to(
+                                            () => AddClubView(docId: doc.id),
+                                          );
                                         },
                                       ),
                                       IconButton(
-                                        icon: Icon(Icons.delete, color: Colors.red),
-                                        onPressed: () => controller.deleteClub(doc.id),
+                                        icon: Icon(
+                                          Icons.delete,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () =>
+                                            _showDeleteDialog(doc.id),
                                       ),
                                     ],
                                   ],
                                 ),
                                 SizedBox(height: 15),
-                                Text(data['description'] ?? '', maxLines: 3, overflow: TextOverflow.ellipsis),
+                                Text(
+                                  data['description'] ?? '',
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                                 SizedBox(height: 15),
 
-                                // জয়েন বাটন (Status Reactive)
                                 SizedBox(
                                   width: double.infinity,
                                   child: Obx(() {
-                                    // এখানে myClubStatus.value চেক করা হচ্ছে, তাই এটি বৈধ Obx
-                                    String? status = controller.myClubStatus[doc.id];
+                                    String? status =
+                                        controller.myClubStatus[doc.id];
 
                                     if (status != null) {
                                       return OutlinedButton.icon(
                                         style: OutlinedButton.styleFrom(
-                                            side: BorderSide(color: status == 'Approved' ? Colors.green : Colors.orange),
-                                            foregroundColor: status == 'Approved' ? Colors.green : Colors.orange
+                                          side: BorderSide(
+                                            color: status == 'Approved'
+                                                ? Colors.green
+                                                : Colors.orange,
+                                          ),
+                                          foregroundColor: status == 'Approved'
+                                              ? Colors.green
+                                              : Colors.orange,
                                         ),
                                         onPressed: null,
-                                        icon: Icon(status == 'Approved' ? Icons.verified : Icons.hourglass_empty),
-                                        label: Text(status == 'Approved' ? "Joined" : "Request Sent"),
+                                        icon: Icon(
+                                          status == 'Approved'
+                                              ? Icons.verified
+                                              : Icons.hourglass_empty,
+                                        ),
+                                        label: Text(
+                                          status == 'Approved'
+                                              ? "Joined"
+                                              : "Request Sent",
+                                        ),
                                       );
                                     } else {
                                       return ElevatedButton(
-                                        style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
-                                        onPressed: () => controller.joinClub(doc.id, data['name']),
-                                        child: Text("Request to Join", style: TextStyle(color: Colors.white)),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.indigo,
+                                        ),
+                                        onPressed: () => controller.joinClub(
+                                          doc.id,
+                                          data['name'],
+                                        ),
+                                        child: Text(
+                                          "Request to Join",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                       );
                                     }
                                   }),
@@ -192,6 +272,39 @@ class ClubListView extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  // --- Show Delete Dialog ---
+  void _showDeleteDialog(String clubId) {
+    Get.dialog(
+      AlertDialog(
+        title: Text("Delete Club?", style: TextStyle(color: Colors.red)),
+        content: Text(
+          "Warning: This will remove the club and all its members.",
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        actions: [
+          // Cancel Button
+          TextButton(
+            child: Text("Cancel", style: TextStyle(color: Colors.black)),
+            onPressed: () {
+              Get.back();
+            },
+          ),
+
+          // Delete Button
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text("Delete All", style: TextStyle(color: Colors.white)),
+            onPressed: () async {
+              Get.back();
+              await controller.deleteClubLogic(clubId);
+            },
+          ),
+        ],
+      ),
+      barrierDismissible: false,
     );
   }
 }

@@ -4,8 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../controller/feature_controller/bloodBank_controller.dart';
 
 class BloodBankView extends StatelessWidget {
-
   final BloodBankController controller = Get.put(BloodBankController());
+
+  BloodBankView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,6 @@ class BloodBankView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: DropdownButtonHideUnderline(
-                    // Obx দিয়ে র‍্যাপ করা যাতে সিলেকশন চেঞ্জ হলে UI আপডেট হয়
                     child: Obx(
                       () => DropdownButton<String>(
                         isExpanded: true,
@@ -64,7 +64,6 @@ class BloodBankView extends StatelessWidget {
 
           // --- Donor List ---
           Expanded(
-            // Obx ব্যবহার করা হয়েছে যাতে selectedGroup চেঞ্জ হলে পুরো বডি রিফ্রেশ হয়
             child: Obx(() {
               if (controller.selectedGroup.value == null) {
                 return Center(
@@ -86,7 +85,7 @@ class BloodBankView extends StatelessWidget {
               }
 
               return StreamBuilder<QuerySnapshot>(
-                stream: controller.donorsStream, // কন্ট্রোলার থেকে স্ট্রিম
+                stream: controller.donorsStream,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return Center(child: CircularProgressIndicator());
@@ -107,7 +106,7 @@ class BloodBankView extends StatelessWidget {
                     itemBuilder: (context, index) {
                       var data = donors[index].data() as Map<String, dynamic>;
 
-                      // সেফটি চেক (যদি কারো নাম না থাকে)
+
                       String name = data['name'] ?? 'Unknown';
                       String dept = data['dept'] ?? 'Student';
                       String phone = data['phone'] ?? '';

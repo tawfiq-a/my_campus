@@ -6,6 +6,8 @@ import '../../controller/routine/routine_controller.dart';
 class ExamRoutineView extends StatelessWidget {
   final RoutineController controller = Get.put(RoutineController());
 
+  ExamRoutineView({super.key});
+
   // --- Show Add Dialog ---
   void _showAddExamDialog(BuildContext context) {
     showDialog(

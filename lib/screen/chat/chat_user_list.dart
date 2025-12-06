@@ -8,6 +8,8 @@ import 'chat_screen.dart';
 class ChatUserListView extends StatelessWidget {
   final ChatController controller = Get.put(ChatController());
 
+ ChatUserListView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,14 +68,14 @@ class ChatUserListView extends StatelessWidget {
                   .collection('users')
                   .snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData)
+                if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());
+                }
 
                 final allUsers = snapshot.data!.docs;
                 final currentUser = controller.currentUser;
 
                 // --- Filtering Logic (Reactive) ---
-                // Obx দিয়ে র‍্যাপ করা যাতে সার্চ টেক্সট বদলালে লিস্ট আপডেট হয়
                 return Obx(() {
                   final filteredUsers = allUsers.where((doc) {
                     final userData = doc.data() as Map<String, dynamic>;
@@ -81,7 +83,7 @@ class ChatUserListView extends StatelessWidget {
                     final roll = (userData['roll'] ?? '').toLowerCase();
                     final uid = userData['uid'];
 
-                    if (currentUser?.uid == uid) return false; // নিজেকে বাদ
+                    if (currentUser?.uid == uid) return false;
 
                     if (controller.searchText.value.isEmpty) return true;
                     return name.contains(controller.searchText.value) ||

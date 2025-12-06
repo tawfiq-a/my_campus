@@ -17,7 +17,7 @@ class NoticeController extends GetxController {
   final searchCtrl = TextEditingController();
   final titleCtrl = TextEditingController();
   final descCtrl = TextEditingController();
-  final linkCtrl = TextEditingController(); // For PDF/Drive Link
+  final linkCtrl = TextEditingController();
 
   @override
   void onInit() {
@@ -39,7 +39,7 @@ class NoticeController extends GetxController {
     super.onClose();
   }
 
-  // --- 1. Check User Role ---
+  // ---  Check User Role ---
   void _checkUserRole() async {
     User? user = _auth.currentUser;
     if (user != null) {
@@ -54,11 +54,16 @@ class NoticeController extends GetxController {
     }
   }
 
-  // --- 2. Add New Notice ---
+  // ---  Add New Notice ---
   void addNotice() async {
     if (titleCtrl.text.isEmpty) {
-      Get.snackbar("Error", "Title is required",
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Title is required",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -72,21 +77,31 @@ class NoticeController extends GetxController {
       });
 
       Get.back(); // Close screen
-      Get.snackbar("Success", "Notice Published!",
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
+      Get.snackbar(
+        "Success",
+        "Notice Published!",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
 
       // Clear fields
       titleCtrl.clear();
       descCtrl.clear();
       linkCtrl.clear();
     } catch (e) {
-      Get.snackbar("Error", e.toString(),
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        e.toString(),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
     isLoading.value = false;
   }
 
-  // --- 3. Update Existing Notice ---
+  // ---  Update Existing Notice ---
   void updateNotice(String docId) async {
     try {
       await _firestore.collection('notices').doc(docId).update({
@@ -96,24 +111,35 @@ class NoticeController extends GetxController {
       });
 
       Get.back(); // Close dialog
-      Get.snackbar("Success", "Notice Updated!",
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
+      Get.snackbar(
+        "Success",
+        "Notice Updated!",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
 
       // Clear fields
       titleCtrl.clear();
       descCtrl.clear();
       linkCtrl.clear();
     } catch (e) {
-      Get.snackbar("Error", "Failed to update notice",
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar(
+        "Error",
+        "Failed to update notice",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 
-  // --- 4. Delete Notice ---
+  // --- Delete Notice ---
   void deleteNotice(String docId) {
     Get.defaultDialog(
       title: "Delete Notice?",
-      middleText: "Are you sure you want to delete this notice? This action cannot be undone.",
+      middleText:
+          "Are you sure you want to delete this notice? This action cannot be undone.",
       textCancel: "Cancel",
       textConfirm: "Delete",
       confirmTextColor: Colors.white,
@@ -121,13 +147,18 @@ class NoticeController extends GetxController {
       onConfirm: () async {
         await _firestore.collection('notices').doc(docId).delete();
         Get.back(); // Close dialog
-        Get.snackbar("Deleted", "Notice removed successfully",
-            snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
+        Get.snackbar(
+          "Deleted",
+          "Notice removed successfully",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
       },
     );
   }
 
-  // --- 5. Populate Fields for Editing ---
+  // ---  Populate Fields for Editing ---
   void prepareEdit(Map<String, dynamic> data) {
     titleCtrl.text = data['title'] ?? '';
     descCtrl.text = data['description'] ?? '';

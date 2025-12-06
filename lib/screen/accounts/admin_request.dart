@@ -6,6 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class AdminRequestsView extends StatelessWidget {
   final AccountsController controller = Get.put(AccountsController());
 
+ AdminRequestsView({super.key});
+
   void _showDetailsDialog(BuildContext context, DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
 
@@ -87,8 +89,9 @@ class AdminRequestsView extends StatelessWidget {
             .orderBy('timestamp', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return Center(child: CircularProgressIndicator());
+          }
           final requests = snapshot.data!.docs;
 
           if (requests.isEmpty) return Center(child: Text("No requests found"));

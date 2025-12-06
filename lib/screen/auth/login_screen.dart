@@ -6,6 +6,8 @@ import '../../controller/auth_controller/auth_controller.dart';
 class LoginView extends StatelessWidget {
   final AuthController controller = Get.put(AuthController());
 
+  LoginView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -153,7 +155,7 @@ class LoginView extends StatelessWidget {
                                     height: 50,
                                     child: OutlinedButton.icon(
                                       style: OutlinedButton.styleFrom(
-                                        backgroundColor: Colors.white,
+                                        backgroundColor: Colors.black,
                                         side: BorderSide(
                                           color: Colors.grey.shade300,
                                         ),
@@ -165,13 +167,13 @@ class LoginView extends StatelessWidget {
                                       ),
                                       icon: Icon(
                                         Icons.g_mobiledata,
-                                        color: Colors.red,
+                                        color: Colors.white,
                                         size: 35,
                                       ),
                                       label: Text(
                                         "Sign in with Google",
                                         style: TextStyle(
-                                          color: Colors.black87,
+                                          color: Colors.white,
                                           fontSize: 16,
                                         ),
                                       ),

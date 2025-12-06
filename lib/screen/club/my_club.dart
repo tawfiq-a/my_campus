@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../controller/club_controller/club_controller.dart';
 
-
 class MyClubsView extends StatelessWidget {
-  // কন্ট্রোলার ইঞ্জেক্ট করা
-  final ClubController controller = Get.find(); // Find existing controller
+  final ClubController controller = Get.find();
+
+ MyClubsView({super.key}); // Find existing controller
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +19,12 @@ class MyClubsView extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('club_members')
-            .where('uid', isEqualTo: controller.currentUid) // কন্ট্রোলার থেকে UID
+            .where('uid', isEqualTo: controller.currentUid)
             .snapshots(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
 
           final myClubs = snapshot.data!.docs;
 
@@ -33,7 +35,10 @@ class MyClubsView extends StatelessWidget {
                 children: [
                   Icon(Icons.diversity_3, size: 60, color: Colors.grey[300]),
                   SizedBox(height: 10),
-                  Text("You haven't joined any clubs yet.", style: TextStyle(color: Colors.grey)),
+                  Text(
+                    "You haven't joined any clubs yet.",
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ],
               ),
             );
@@ -48,7 +53,9 @@ class MyClubsView extends StatelessWidget {
 
               return Card(
                 elevation: 3,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
                 child: ListTile(
                   contentPadding: EdgeInsets.all(10),
                   leading: CircleAvatar(
@@ -60,8 +67,12 @@ class MyClubsView extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   subtitle: Text(
-                      "Status: $status",
-                      style: TextStyle(color: status == 'Approved' ? Colors.green : Colors.orange)
+                    "Status: $status",
+                    style: TextStyle(
+                      color: status == 'Approved'
+                          ? Colors.green
+                          : Colors.orange,
+                    ),
                   ),
 
                   // --- Status Chip or Leave Button ---
@@ -72,7 +83,10 @@ class MyClubsView extends StatelessWidget {
                         Chip(
                           label: Text("Member"),
                           backgroundColor: Colors.green.shade100,
-                          labelStyle: TextStyle(color: Colors.green[800], fontWeight: FontWeight.bold),
+                          labelStyle: TextStyle(
+                            color: Colors.green[800],
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
 
                       SizedBox(width: 5),
@@ -81,7 +95,10 @@ class MyClubsView extends StatelessWidget {
                       IconButton(
                         icon: Icon(Icons.exit_to_app, color: Colors.red),
                         tooltip: "Leave Club / Cancel Request",
-                        onPressed: () => controller.leaveClub(myClubs[index].id, data['clubName']),
+                        onPressed: () => controller.leaveClub(
+                          myClubs[index].id,
+                          data['clubName'],
+                        ),
                       ),
                     ],
                   ),

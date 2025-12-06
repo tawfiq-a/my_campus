@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controller/library_controller/library_controller.dart';
 
-
 class AddBookView extends StatelessWidget {
   final String? docId;
   AddBookView({super.key, this.docId});
@@ -56,7 +55,6 @@ class AddBookView extends StatelessWidget {
     );
   }
 }
-
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
