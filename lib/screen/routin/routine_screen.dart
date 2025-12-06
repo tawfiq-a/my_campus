@@ -16,7 +16,7 @@ class RoutineView extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text("Class Routine", style: TextStyle(color: Colors.white)),
-          backgroundColor: Colors.deepPurple,
+          backgroundColor: Colors.black,
           iconTheme: IconThemeData(color: Colors.white),
           bottom: TabBar(
             isScrollable: true,

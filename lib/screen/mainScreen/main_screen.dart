@@ -9,39 +9,40 @@ import '../notice/notice_screen.dart';
 import '../profile/profile_screen.dart';
 
 class MainView extends StatelessWidget {
-
   final MainController controller = Get.put(MainController());
 
-
   final List<Widget> _pages = [
-    HomeDashboard(),      // 0
-    NoticeListView(),     // 1
-    ChatUserListView(),   // 2
-    ProfileView(),        // 3
+    HomeDashboard(), // 0
+    NoticeListView(), // 1
+    ChatUserListView(), // 2
+    ProfileView(), // 3
   ];
 
-   MainView({super.key});
+  MainView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-
       body: Obx(() => _pages[controller.selectedIndex.value]),
 
       bottomNavigationBar: Container(
-        color: Colors.white,
+        decoration: BoxDecoration(color: Colors.black,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        )),
+
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
           child: GNav(
-            backgroundColor: Colors.white,
-            color: Colors.black,
+            backgroundColor: Colors.black,
+            color: Colors.white,
             activeColor: Colors.white,
-            tabBackgroundColor: Colors.deepPurple,
+            tabBackgroundColor: Colors.white38,
             gap: 8,
             padding: EdgeInsets.all(16),
             tabs: [
-              GButton(icon: Icons.home, text: 'Home'),
+              GButton(icon: Icons.home, text: 'Home', hoverColor: Colors.white),
               GButton(icon: Icons.notifications, text: 'Notice'),
               GButton(icon: Icons.chat_bubble, text: 'Chat'),
               GButton(icon: Icons.person, text: 'Profile'),

@@ -20,12 +20,12 @@ Widget buildMenuCard(
     },
     child: Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.purpleAccent, width: 2),
+        border: Border.all(color: Colors.black87, width: 2),
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.deepPurpleAccent,
+            color: Colors.black54,
             blurRadius: 5,
             spreadRadius: 2,
           ),

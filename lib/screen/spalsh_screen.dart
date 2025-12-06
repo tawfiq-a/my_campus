@@ -45,8 +45,8 @@ class _SplashScreenState extends State<SplashScreen> {
           height: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.purpleAccent, Colors. red],
-              begin: Alignment.topCenter,
+              colors: [Colors.black87, Colors.  black],
+              begin: Alignment.topLeft,
               end: Alignment.bottomCenter,
             ),
           ),
@@ -66,8 +66,9 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               SizedBox(height: 20),
               Text(
-                "Smart Campus",
+                "My Campus",
                 style: TextStyle(
+                  fontFamily: 'MyCustomFont',
                   fontSize: 30,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

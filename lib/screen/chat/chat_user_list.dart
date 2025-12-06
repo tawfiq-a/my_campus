@@ -15,7 +15,7 @@ class ChatUserListView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Users", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.black87,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Get.off(() => MainView()),
@@ -27,7 +27,7 @@ class ChatUserListView extends StatelessWidget {
           // --- Search Bar ---
           Container(
             padding: EdgeInsets.all(10),
-            color: Colors.deepPurple,
+            color: Colors.black87,
             child: TextField(
               controller: controller.searchController,
               style: TextStyle(color: Colors.white),
@@ -141,12 +141,12 @@ class ChatUserListView extends StatelessWidget {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(15),
                               border: Border.all(
-                                color: Colors.deepPurple,
+                                color: Colors.black,
                                 width: 1,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.deepPurpleAccent,
+                                  color: Colors.black45,
                                   blurRadius: 4,
                                   spreadRadius: 2,
                                 ),
@@ -162,7 +162,7 @@ class ChatUserListView extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.deepPurple,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
@@ -179,7 +179,7 @@ class ChatUserListView extends StatelessWidget {
                                     : "ID/Roll: $roll",
                                 style: TextStyle(
                                   color: unreadCount > 0
-                                      ? Colors.deepPurple
+                                      ? Colors.black87
                                       : Colors.grey[600],
                                   fontWeight: unreadCount > 0
                                       ? FontWeight.bold
@@ -205,7 +205,7 @@ class ChatUserListView extends StatelessWidget {
                                   : Container(
                                       padding: EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        color: Colors.deepPurple,
+                                        color: Colors.black54,
                                         shape: BoxShape.circle,
                                       ),
                                       child: Icon(

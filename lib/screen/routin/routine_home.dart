@@ -13,7 +13,7 @@ class RoutineHomeScreen extends StatelessWidget {
           "Schedules & Routines",
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.black87,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
       ),

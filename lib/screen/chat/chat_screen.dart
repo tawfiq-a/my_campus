@@ -44,7 +44,7 @@ class ChatView extends StatelessWidget {
             ),
           ],
         ),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.black87,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Get.back(),
@@ -112,7 +112,7 @@ class ChatView extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send, color: Colors.deepPurple),
+                  icon: Icon(Icons.send, color: Colors.black),
                   onPressed: () => controller.sendMessage(chatRoomId),
                 ),
               ],
@@ -143,7 +143,7 @@ class MessageBubble extends StatelessWidget {
           Material(
             borderRadius: BorderRadius.circular(30),
             elevation: 5.0,
-            color: isMe ? Colors.deepPurple : Colors.white,
+            color: isMe ? Colors.black : Colors.white,
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
               child: Text(

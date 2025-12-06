@@ -17,7 +17,7 @@ class TeacherView extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           doc != null ? "Edit Teacher Info" : "Add New Teacher",
-          style: TextStyle(color: Colors.deepPurple),
+          style: TextStyle(color: Colors.black54),
         ),
         content: SingleChildScrollView(
           child: Column(
@@ -47,7 +47,7 @@ class TeacherView extends StatelessWidget {
         actions: [
           TextButton(child: Text("Cancel"), onPressed: () => Get.back()),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.white10),
             child: Text(
               doc != null ? "Update" : "Add",
               style: TextStyle(color: Colors.white),
@@ -70,7 +70,7 @@ class TeacherView extends StatelessWidget {
       keyboardType: isNumber ? TextInputType.phone : TextInputType.text,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, size: 20, color: Colors.deepPurple),
+        prefixIcon: Icon(icon, size: 20, color: Colors.black54),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         isDense: true,
       ),
@@ -81,8 +81,11 @@ class TeacherView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(onPressed: (){
+          Get.back();
+        }, icon: Icon(Icons.arrow_back,color: Colors.white)),
         title: Text("Teacher Directory", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.black87,
         elevation: 0,
       ),
 
@@ -90,7 +93,7 @@ class TeacherView extends StatelessWidget {
       floatingActionButton: Obx(
         () => controller.isTeacher.value
             ? FloatingActionButton.extended(
-                backgroundColor: Colors.deepPurple,
+                backgroundColor: Colors.black54,
                 icon: Icon(Icons.add, color: Colors.white),
                 label: Text(
                   "Add Teacher",
@@ -102,7 +105,7 @@ class TeacherView extends StatelessWidget {
       ), // Empty Container for Student
 
       body: Container(
-        color: Colors.grey[100],
+        color: Colors.black12,
         child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('teachers')
@@ -144,6 +147,7 @@ class TeacherView extends StatelessWidget {
                 final data = doc.data() as Map<String, dynamic>;
 
                 return Card(
+                  color: Colors.black12,
                   elevation: 2,
                   margin: EdgeInsets.symmetric(vertical: 6),
                   shape: RoundedRectangleBorder(
@@ -161,7 +165,7 @@ class TeacherView extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: Colors.deepPurple,
+                              color: Colors.black45,
                             ),
                           ),
                         ),
@@ -175,14 +179,14 @@ class TeacherView extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 17,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                                  color: Colors.white,
                                 ),
                               ),
                               SizedBox(height: 4),
                               Text(
                                 data['designation'] ?? '',
                                 style: TextStyle(
-                                  color: Colors.deepPurple,
+                                  color: Colors. white,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -190,7 +194,7 @@ class TeacherView extends StatelessWidget {
                               Text(
                                 "Dept: ${data['dept'] ?? ''}",
                                 style: TextStyle(
-                                  color: Colors.grey[600],
+                                  color: Colors.white,
                                   fontSize: 12,
                                 ),
                               ),
@@ -229,7 +233,7 @@ class TeacherView extends StatelessWidget {
                                   ? PopupMenuButton<String>(
                                       icon: Icon(
                                         Icons.more_vert,
-                                        color: Colors.grey,
+                                        color: Colors.black87,
                                       ),
                                       onSelected: (value) {
                                         if (value == 'edit') {

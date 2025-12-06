@@ -78,22 +78,24 @@ class LibraryHomeView extends StatelessWidget {
           child: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance.collection('books').snapshots(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) {
+              if (!snapshot.hasData)
                 return Center(child: CircularProgressIndicator());
-              }
+
               final allBooks = snapshot.data!.docs;
 
               return Obx(() {
+                String search = controller.searchText.value;
+
                 final filteredBooks = allBooks.where((doc) {
                   final data = doc.data() as Map<String, dynamic>;
+
                   return data['title'].toString().toLowerCase().contains(
-                    controller.searchText.value,
+                    search,
                   );
                 }).toList();
 
-                if (filteredBooks.isEmpty) {
+                if (filteredBooks.isEmpty)
                   return Center(child: Text("No books found"));
-                }
 
                 return GridView.builder(
                   padding: EdgeInsets.all(10),
@@ -109,124 +111,121 @@ class LibraryHomeView extends StatelessWidget {
                     final data = doc.data() as Map<String, dynamic>;
                     int available = data['available_copies'] ?? 0;
 
-                    return Obx(() {
-                      bool isRequested = controller.myRequestedBookIds.contains(
-                        doc.id,
-                      );
+                    bool isRequested = controller.myRequestedBookIds.contains(
+                      doc.id,
+                    );
 
-                      return Card(
-                        elevation: 3,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                color: Colors.grey[300],
-                                child:
-                                    data['coverUrl'] != null &&
-                                        data['coverUrl'].toString().isNotEmpty
-                                    ? Image.network(
-                                        data['coverUrl'],
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Icon(
-                                        Icons.menu_book,
-                                        size: 50,
-                                        color: Colors.grey,
-                                      ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    data['title'],
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    data['author'],
-                                    style: TextStyle(
-                                      fontSize: 12,
+                    return Card(
+                      elevation: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              color: Colors.grey[300],
+                              child:
+                                  data['coverUrl'] != null &&
+                                      data['coverUrl'].toString().isNotEmpty
+                                  ? Image.network(
+                                      data['coverUrl'],
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Icon(
+                                      Icons.menu_book,
+                                      size: 50,
                                       color: Colors.grey,
                                     ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  data['title'],
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  data['author'],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
                                   ),
-                                  SizedBox(height: 5),
-                                  Text(
-                                    "Copies: $available",
-                                    style: TextStyle(
-                                      color: available > 0
-                                          ? Colors.green
-                                          : Colors.red,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+                                SizedBox(height: 5),
+                                Text(
+                                  "Copies: $available",
+                                  style: TextStyle(
+                                    color: available > 0
+                                        ? Colors.green
+                                        : Colors.red,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  SizedBox(height: 8),
+                                ),
+                                SizedBox(height: 8),
 
-                                  SizedBox(
-                                    width: double.infinity,
-                                    height: 30,
-                                    child: isRequested
-                                        ? OutlinedButton(
-                                            onPressed: null,
-                                            child: Text(
-                                              "Requested",
-                                              style: TextStyle(
-                                                color: Colors.orange,
-                                              ),
-                                            ),
-                                          )
-                                        : ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: available > 0
-                                                  ? Colors.brown
-                                                  : Colors.grey,
-                                              padding: EdgeInsets.zero,
-                                            ),
-                                            onPressed: available > 0
-                                                ? () => controller.requestBook(
-                                                    doc.id,
-                                                    data['title'],
-                                                  )
-                                                : null,
-                                            child: Text(
-                                              available > 0
-                                                  ? "Borrow"
-                                                  : "Out of Stock",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                              ),
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 30,
+                                  child: isRequested
+                                      ? OutlinedButton(
+                                          onPressed: null,
+                                          child: Text(
+                                            "Requested",
+                                            style: TextStyle(
+                                              color: Colors.orange,
                                             ),
                                           ),
-                                  ),
-
-                                  if (controller.isLibrarian.value)
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: IconButton(
-                                        icon: Icon(
-                                          Icons.delete,
-                                          color: Colors.red,
-                                          size: 20,
+                                        )
+                                      : ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: available > 0
+                                                ? Colors.brown
+                                                : Colors.grey,
+                                            padding: EdgeInsets.zero,
+                                          ),
+                                          onPressed: available > 0
+                                              ? () => controller.requestBook(
+                                                  doc.id,
+                                                  data['title'],
+                                                )
+                                              : null,
+                                          child: Text(
+                                            available > 0
+                                                ? "Borrow"
+                                                : "Out of Stock",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                            ),
+                                          ),
                                         ),
-                                        onPressed: () =>
-                                            controller.deleteBook(doc.id),
+                                ),
+
+                                // Librarian Check (No Obx needed here as parent handles update)
+                                if (controller.isLibrarian.value)
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: IconButton(
+                                      icon: Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                        size: 20,
                                       ),
+                                      onPressed: () =>
+                                          controller.deleteBook(doc.id),
                                     ),
-                                ],
-                              ),
+                                  ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
-                    });
+                          ),
+                        ],
+                      ),
+                    );
                   },
                 );
               });

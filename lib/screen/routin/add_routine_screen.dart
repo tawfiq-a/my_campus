@@ -11,8 +11,11 @@ class AddRoutineView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(onPressed: (){
+          Get.back();
+        }, icon: Icon(Icons.arrow_back,color: Colors.white)),
         title: Text("Add Class Routine", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.black87,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -81,7 +84,7 @@ class AddRoutineView extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
+                      backgroundColor: Colors.black38,
                     ),
                     onPressed: controller.isLoading.value
                         ? null
@@ -112,7 +115,7 @@ class AddRoutineView extends StatelessWidget {
       controller: ctrl,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Colors.deepPurple),
+        prefixIcon: Icon(icon, color: Colors.black),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );

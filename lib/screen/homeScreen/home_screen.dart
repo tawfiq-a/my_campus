@@ -23,7 +23,7 @@ class HomeDashboard extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text("My Campus", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.black,
         actions: [
           IconButton(
             icon: Icon(Icons.info_outline, size: 30, color: Colors.white),
@@ -39,7 +39,11 @@ class HomeDashboard extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.deepPurple,
+              gradient: LinearGradient(colors: [Colors.black,Colors.black87],
+                  begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(30),
                 bottomRight: Radius.circular(30),

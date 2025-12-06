@@ -13,7 +13,7 @@ class ProfileView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("My Profile", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.black87,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
@@ -44,8 +44,8 @@ class ProfileView extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: controller.userRole.value == 'teacher'
-                        ? [Colors.deepPurple, Colors.indigo]
-                        : [Colors.deepPurple, Colors.purpleAccent],
+                        ? [Colors.black87, Colors.black38]
+                        : [Colors.black87, Colors.black38],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -65,7 +65,7 @@ class ProfileView extends StatelessWidget {
                             : "U",
                         style: TextStyle(
                           fontSize: 40,
-                          color: Colors.deepPurple,
+                          color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -165,7 +165,7 @@ class ProfileView extends StatelessWidget {
                         prefixIcon: Icon(
                           Icons.bloodtype,
                           color: controller.isEditing.value
-                              ? Colors.deepPurple
+                              ? Colors.red
                               : Colors.grey,
                         ),
                         border: OutlineInputBorder(
@@ -258,7 +258,7 @@ class ProfileView extends StatelessWidget {
                         height: 50,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple,
+                            backgroundColor: Colors.black87,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),

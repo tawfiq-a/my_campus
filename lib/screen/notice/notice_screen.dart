@@ -66,7 +66,7 @@ class NoticeListView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Campus Notices", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.black87,
         iconTheme: IconThemeData(color: Colors.white),
         actions: [
           // Add Button (Only for Teachers)
@@ -86,224 +86,233 @@ class NoticeListView extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // --- Search Bar ---
-          Container(
-            padding: EdgeInsets.all(10),
-            color: Colors.deepPurple,
-            child: TextField(
-              controller: controller.searchCtrl,
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                hintText: "Search Notices...",
-                hintStyle: TextStyle(color: Colors.white70),
-                prefixIcon: Icon(Icons.search, color: Colors.white),
-                suffixIcon: Obx(
-                  () => controller.searchText.value.isNotEmpty
-                      ? IconButton(
-                          icon: Icon(Icons.clear, color: Colors.white),
-                          onPressed: () {
-                            controller.searchCtrl.clear();
-                            controller.searchText.value = "";
-                          },
-                        )
-                      : SizedBox(),
-                ),
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.2),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 0,
+      body: Container(
+        height: double.infinity,
+        width:  double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.black54, Colors.black87
+            ],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+          ),
+        ),
+        child: Column(
+          children: [
+            // --- Search Bar ---
+            Container(
+              padding: EdgeInsets.all(10),
+              color: Colors.black12,
+              child: TextField(
+                controller: controller.searchCtrl,
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: "Search Notices...",
+                  hintStyle: TextStyle(color: Colors.white70),
+                  prefixIcon: Icon(Icons.search, color: Colors.white),
+                  suffixIcon: Obx(
+                    () => controller.searchText.value.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(Icons.clear, color: Colors.white),
+                            onPressed: () {
+                              controller.searchCtrl.clear();
+                              controller.searchText.value = "";
+                            },
+                          )
+                        : SizedBox(),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.2),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 0,
+                  ),
                 ),
               ),
             ),
-          ),
 
-          // --- Notice List ---
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('notices')
-                  .orderBy('date', descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
-                }
-
-                final allNotices = snapshot.data!.docs;
-
-                // --- Reactive Filtering ---
-                return Obx(() {
-                  final filteredNotices = allNotices.where((doc) {
-                    final data = doc.data() as Map<String, dynamic>;
-                    final title = (data['title'] ?? '').toLowerCase();
-                    final desc = (data['description'] ?? '').toLowerCase();
-
-                    if (controller.searchText.value.isEmpty) return true;
-                    return title.contains(controller.searchText.value) ||
-                        desc.contains(controller.searchText.value);
-                  }).toList();
-
-                  if (filteredNotices.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.search_off, size: 50, color: Colors.grey),
-                          Text(
-                            "No notice found!",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    );
+            // --- Notice List ---
+            // --- Notice List ---
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('notices')
+                    .orderBy('date', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(child: CircularProgressIndicator());
                   }
 
-                  return ListView.builder(
-                    itemCount: filteredNotices.length,
-                    padding: EdgeInsets.all(12),
-                    itemBuilder: (context, index) {
-                      final doc = filteredNotices[index];
+                  final allNotices = snapshot.data!.docs;
+
+                  // --- Reactive Filtering ---
+                  return Obx(() {
+                    String search = controller.searchText.value;
+
+                    final filteredNotices = allNotices.where((doc) {
                       final data = doc.data() as Map<String, dynamic>;
+                      final title = (data['title'] ?? '').toLowerCase();
+                      final desc = (data['description'] ?? '').toLowerCase();
 
-                      String formattedDate = "Recently";
-                      if (data['date'] != null) {
-                        formattedDate = DateFormat(
-                          'dd MMM, hh:mm a',
-                        ).format((data['date'] as Timestamp).toDate());
-                      }
+                      if (search.isEmpty) return true;
 
-                      return Card(
-                        elevation: 3,
-                        margin: EdgeInsets.symmetric(vertical: 8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.notifications_active,
-                                        color: Colors.orangeAccent,
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        formattedDate,
-                                        style: TextStyle(color: Colors.grey),
-                                      ),
-                                    ],
-                                  ),
+                      return title.contains(search) || desc.contains(search);
+                    }).toList();
 
-                                  // Edit/Delete Menu (Only for Teachers)
-                                  Obx(
-                                    () => controller.isTeacher.value
-                                        ? PopupMenuButton<String>(
-                                            onSelected: (value) {
-                                              if (value == 'delete') {
-                                                controller.deleteNotice(doc.id);
-                                              }
-                                              if (value == 'edit') {
-                                                controller.prepareEdit(data);
-                                                _showEditDialog(
-                                                  context,
-                                                  doc.id,
-                                                );
-                                              }
-                                            },
-                                            itemBuilder: (context) => [
-                                              PopupMenuItem(
-                                                value: 'edit',
-                                                child: Text("Edit"),
-                                              ),
-                                              PopupMenuItem(
-                                                value: 'delete',
-                                                child: Text("Delete"),
-                                              ),
-                                            ],
-                                          )
-                                        : SizedBox(),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 10),
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  data['title'],
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 5),
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  data['description'],
-                                  style: TextStyle(color: Colors.grey[800]),
-                                ),
-                              ),
-
-                              // PDF Button
-                              if (data['pdfUrl'] != null &&
-                                  data['pdfUrl'].toString().isNotEmpty) ...[
-                                SizedBox(height: 15),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: OutlinedButton.icon(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.redAccent),
-                                      foregroundColor: Colors.redAccent,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                    icon: Icon(Icons.picture_as_pdf),
-                                    label: Text("View PDF / Attachment"),
-                                    onPressed: () async {
-                                      final Uri uri = Uri.parse(data['pdfUrl']);
-                                      try {
-                                        await launchUrl(
-                                          uri,
-                                          mode: LaunchMode.externalApplication,
-                                        );
-                                      } catch (e) {
-                                        Get.snackbar(
-                                          "Error",
-                                          "Could not open link",
-                                          backgroundColor: Colors.redAccent,
-                                          colorText: Colors.white,
-                                        );
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
+                    if (filteredNotices.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.search_off, size: 50, color: Colors.grey),
+                            Text(
+                              "No notice found!",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ],
                         ),
                       );
-                    },
-                  );
-                });
-              },
+                    }
+
+                    return ListView.builder(
+                      itemCount: filteredNotices.length,
+                      padding: EdgeInsets.all(12),
+                      itemBuilder: (context, index) {
+                        final doc = filteredNotices[index];
+                        final data = doc.data() as Map<String, dynamic>;
+
+                        String formattedDate = "Recently";
+                        if (data['date'] != null) {
+                          formattedDate = DateFormat(
+                            'dd MMM, hh:mm a',
+                          ).format((data['date'] as Timestamp).toDate());
+                        }
+
+                        return Card(
+                          elevation: 3,
+                          margin: EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.notifications_active,
+                                          color: Colors.orangeAccent,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          formattedDate,
+                                          style: TextStyle(color: Colors.grey),
+                                        ),
+                                      ],
+                                    ),
+
+                                    // Edit/Delete Menu (Only for Teachers)
+                                    if (controller.isTeacher.value)
+                                      PopupMenuButton<String>(
+                                        onSelected: (value) {
+                                          if (value == 'delete') {
+                                            controller.deleteNotice(doc.id);
+                                          }
+                                          if (value == 'edit') {
+                                            controller.prepareEdit(data);
+                                            _showEditDialog(context, doc.id);
+                                          }
+                                        },
+                                        itemBuilder: (context) => [
+                                          PopupMenuItem(
+                                            value: 'edit',
+                                            child: Text("Edit"),
+                                          ),
+                                          PopupMenuItem(
+                                            value: 'delete',
+                                            child: Text("Delete"),
+                                          ),
+                                        ],
+                                      ),
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    data['title'],
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    data['description'],
+                                    style: TextStyle(color: Colors.grey[800]),
+                                  ),
+                                ),
+
+                                // PDF Button
+                                if (data['pdfUrl'] != null &&
+                                    data['pdfUrl'].toString().isNotEmpty) ...[
+                                  SizedBox(height: 15),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: OutlinedButton.icon(
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(color: Colors.redAccent),
+                                        foregroundColor: Colors.redAccent,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                      icon: Icon(Icons.picture_as_pdf),
+                                      label: Text("View PDF / Attachment"),
+                                      onPressed: () async {
+                                        final Uri uri = Uri.parse(data['pdfUrl']);
+                                        try {
+                                          await launchUrl(
+                                            uri,
+                                            mode: LaunchMode.externalApplication,
+                                          );
+                                        } catch (e) {
+                                          Get.snackbar(
+                                            "Error",
+                                            "Could not open link",
+                                            backgroundColor: Colors.redAccent,
+                                            colorText: Colors.white,
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  });
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
