@@ -143,6 +143,7 @@ class LibraryController extends GetxController {
     try {
       if (docId != null) {
         await _firestore.collection('books').doc(docId).update(data);
+        Get.back();
         Get.snackbar(
           "Success",
           "Book Updated!",
@@ -150,8 +151,10 @@ class LibraryController extends GetxController {
           colorText: Colors.white,
         );
       } else {
+        Get.back();
         data['created_at'] = FieldValue.serverTimestamp();
         await _firestore.collection('books').add(data);
+
         Get.snackbar(
           "Success",
           "Book Added!",
@@ -159,7 +162,7 @@ class LibraryController extends GetxController {
           colorText: Colors.white,
         );
       }
-      Get.back();
+      // Get.back();
     } catch (e) {
       Get.snackbar(
         "Error",

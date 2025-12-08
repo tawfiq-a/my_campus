@@ -14,12 +14,8 @@ class ChatUserListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Users", style: TextStyle(color: Colors.white)),
+        title: Center(child: Text("Users", style: TextStyle(color: Colors.white))),
         backgroundColor: Colors.black87,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Get.off(() => MainView()),
-        ),
         automaticallyImplyLeading: false,
       ),
       body: Column(

@@ -110,7 +110,6 @@ class TeacherController extends GetxController {
 
   // --- Add / Edit Teacher Logic ---
 
-
   void initForm(DocumentSnapshot? doc) {
     if (doc != null) {
       var data = doc.data() as Map<String, dynamic>;
@@ -151,6 +150,7 @@ class TeacherController extends GetxController {
       if (docId != null) {
         // Update
         await _firestore.collection('teachers').doc(docId).update(teacherData);
+        Get.back();
         Get.snackbar(
           "Success",
           "Updated Successfully!",
@@ -160,6 +160,7 @@ class TeacherController extends GetxController {
       } else {
         // Add
         await _firestore.collection('teachers').add(teacherData);
+        Get.back();
         Get.snackbar(
           "Success",
           "Teacher Added!",

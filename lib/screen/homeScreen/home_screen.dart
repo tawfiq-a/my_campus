@@ -1,4 +1,5 @@
 import 'package:chat_app/screen/about.dart';
+import 'package:chat_app/screen/attendence/attendence_home.dart';
 import 'package:chat_app/screen/notice/notice_screen.dart';
 import 'package:chat_app/screen/routin/routine_home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,6 +8,7 @@ import '../../helper/card_menu.dart';
 import '../accounts/accounts_home.dart';
 import '../chat/chat_user_list.dart';
 import '../club/club_home.dart';
+import '../exam/exam_screen.dart';
 import '../features/blood_bank_screen.dart';
 import '../features/event_gallery.dart';
 import '../library/library_home.dart';
@@ -39,8 +41,9 @@ class HomeDashboard extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [Colors.black,Colors.black87],
-                  begin: Alignment.topCenter,
+              gradient: LinearGradient(
+                colors: [Colors.black, Colors.black87],
+                begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
 
@@ -98,10 +101,10 @@ class HomeDashboard extends StatelessWidget {
                 ),
                 buildMenuCard(
                   context,
-                  "Chat Room",
-                  Icons.chat,
+                  "Attendance",
+                  Icons.present_to_all,
                   Colors.green,
-                  ChatUserListView(),
+                  AttendanceHomeView(),
                 ),
                 buildMenuCard(
                   context,
@@ -144,6 +147,13 @@ class HomeDashboard extends StatelessWidget {
                   Icons.diversity_3,
                   Colors.indigo,
                   ClubHomeScreen(),
+                ),
+                buildMenuCard(
+                  context,
+                  "Exam",
+                  Icons.book,
+                  Colors.greenAccent,
+                  ExamHomeView(),
                 ),
               ],
             ),
